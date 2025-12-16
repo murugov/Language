@@ -22,7 +22,7 @@ enum HashOp
 	HASH_LBRACE    = 0x7B,
 	HASH_RBRACE    = 0x7D,
 	HASH_COMMA     = 0x2C,
-	HASH_SEMICOLO  = 0x3B,
+	HASH_SEMICOLON = 0x3B,
 	HASH_COLON     = 0x3A,
 	HASH_EQ        = 0x3D,
 	HASH_EQEQ      = 0x7A0,

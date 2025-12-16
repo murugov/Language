@@ -1,6 +1,8 @@
 #ifndef ASSEMBLER_HPP
 #define ASSEMBLER_HPP
 
+#include "CONFIG.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,6 +10,8 @@
 #include <math.h>
 #include <ctype.h>
 #include "IsBadPtr.hpp"
+#include "logger.hpp"
+#include "colors.hpp"
 
 #define SIGNATURE  {'A', 'M'}
 #define VERSION    7
@@ -31,26 +35,26 @@ struct sign_t
 
 enum AsmErr_t
 {
-    SUCCESS              = 0x00,
-    ERROR                = 0x01,
-    BAD_INPUT_FILE_PTR   = 0x02,
-    BAD_OUTPUT_FILE_PTR  = 0x03,
-    BAD_BUFFER_PTR       = 0x04,
-    BAD_ARR_CMD_PTR      = 0x05,
-    BAD_CODE_PTR         = 0x06,
-    BAD_ARR_LABELS_PTR   = 0x07,
-    WRONG_FILE_SIZE      = 0x08,
-    CTOR_FAIL            = 0x09,
-    CMD_NUM_FAIL         = 0x0A,
-    CMD_WITH_ARG_FAIL    = 0x0B,
-    CMD_WITHOUT_ARG_FAIL = 0x0C,
-    LINE_SIZE_EXCEED     = 0x0D,
-    REG_NEX              = 0x0E,
-    MEM_NEX              = 0x0F,
-    ARG_NEX              = 0x10,
-    UNKNOWN_CMD          = 0x11,
-    UNKNOWN_LABEL        = 0x12,
-    RE_LABEL             = 0x13
+    ASM_SUCCESS              = 0x00,
+    ASM_ERROR                = 0x01,
+    ASM_BAD_INPUT_FILE_PTR   = 0x02,
+    ASM_BAD_OUTPUT_FILE_PTR  = 0x03,
+    ASM_BAD_BUFFER_PTR       = 0x04,
+    ASM_BAD_ARR_CMD_PTR      = 0x05,
+    ASM_BAD_CODE_PTR         = 0x06,
+    ASM_BAD_ARR_LABELS_PTR   = 0x07,
+    ASM_WRONG_FILE_SIZE      = 0x08,
+    ASM_CTOR_FAIL            = 0x09,
+    ASM_CMD_NUM_FAIL         = 0x0A,
+    ASM_CMD_WITH_ARG_FAIL    = 0x0B,
+    ASM_CMD_WITHOUT_ARG_FAIL = 0x0C,
+    ASM_LINE_SIZE_EXCEED     = 0x0D,
+    ASM_REG_NEX              = 0x0E,
+    ASM_MEM_NEX              = 0x0F,
+    ASM_ARG_NEX              = 0x10,
+    ASM_UNKNOWN_CMD          = 0x11,
+    ASM_UNKNOWN_LABEL        = 0x12,
+    ASM_RE_LABEL             = 0x13
 };
 
 enum mask_t
@@ -136,9 +140,6 @@ int LabelCmpByHash(const void *a, const void *b);
 void AsmErrPrint(char *SourceFile, char *ByteCode, AsmErr_t verd);
 void AsmDtor(char *buffer, line_with_num_t *arr_ptr);
 
-#define IS_BAD_PTR(ptr) IsBadPtr((void*)ptr)
 #define MASK_CHECK(type_cmd, mask) (type_cmd & mask) == mask
-
-#include "BinSearch.hpp"
 
 #endif

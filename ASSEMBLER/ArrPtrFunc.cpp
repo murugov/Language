@@ -1,7 +1,4 @@
-#include "compile.h"
-
-// #define DEBUG
-#include "DEBUG.h"
+#include "assembler.hpp"
 
 
 line_with_num_t* ArrPtrCtor(FILE *SourceFile, char* buffer, size_t *count_line)
@@ -20,15 +17,13 @@ void RemoveComments(line_with_num_t *arr_cmd, size_t *count_line)
 {
     for (size_t i = 0; i < *count_line; ++i)
     {
-        char* colon = strchr(arr_cmd[i].ptr, ';');
-
-        if (colon != NULL)
-            *colon = '\0';
+        char* colon = strchr(arr_cmd[i].ptr, '#');
+        if (colon != NULL) *colon = '\0';
     }
 }
 
 
-void AsmDtor(char *buffer, line_with_num_t *arr_ptr)
+void AsmDtor(char *buffer, line_with_num_t *arr_ptr)                    // improve
 {
     free(buffer);
     free(arr_ptr);

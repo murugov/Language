@@ -1,20 +1,17 @@
-#include "compile.h"
-#include "SizeFile.h"
-#include "LineCounter.h"
+#include "assembler.hpp"
+#include "SizeFile.hpp"
+#include "LineCounter.hpp"
 
 
 line_with_num_t* SpecTxtReader(FILE *SourceFile, char* buffer, size_t *count_line)
 {
-    if (IS_BAD_PTR(SourceFile))
-        return NULL;
+    if (IS_BAD_PTR(SourceFile)) return NULL;
 
     ssize_t file_size = SizeFile(SourceFile);
-    if (file_size < 0)
-        return NULL;
+    if (file_size < 0) return NULL;
 
     buffer = (char*)calloc((size_t)file_size + 1, sizeof(char));
-    if (IS_BAD_PTR(buffer))
-        return NULL;
+    if (IS_BAD_PTR(buffer)) return NULL;
 
     size_t capacity = fread(buffer, sizeof(char), (size_t)file_size, SourceFile);
     buffer[capacity] = '\0';
@@ -23,12 +20,10 @@ line_with_num_t* SpecTxtReader(FILE *SourceFile, char* buffer, size_t *count_lin
         buffer[num_elem] = (char)toupper(buffer[num_elem]);
 
     *count_line = LineCounter(buffer);
-    if (*count_line == 0)
-        return NULL;
+    if (*count_line == 0) return NULL;
 
     line_with_num_t *arr_ptr = (line_with_num_t*)calloc(*count_line + 1, sizeof(line_with_num_t));
-    if (IS_BAD_PTR(arr_ptr))
-        return NULL;
+    if (IS_BAD_PTR(arr_ptr)) return NULL;
     
     size_t cmd_number = 0;
     size_t line_number = 0;

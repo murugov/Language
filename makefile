@@ -10,7 +10,7 @@ DUMP_INCLUDES		= -I./DUMP/headers
 LEX_INCLUDES		= -I./LEXER/headers
 WOLFRAM_INCLUDES    = -I./WOLFRAM_SIGMA/headers
 ASM_INCLUDES  		= -I./ASSEMBLER/headers
-SPU_INCLUDES  		= -I./SPU/headers
+# SPU_INCLUDES  		= -I./SPU/headers
 
 COMMON_FILES  = COMMON/GetHash.cpp COMMON/IsBadPtr.cpp COMMON/LineCounter.cpp COMMON/logger.cpp COMMON/SizeFile.cpp COMMON/TXTreader.cpp COMMON/math_func.cpp COMMON/is_zero.cpp COMMON/Factorial.cpp
 TREE_FILES 	  = TREE/TreeFunc.cpp
@@ -18,7 +18,7 @@ HT_FILES	  = HASH_TABLE/HashTableFunc.cpp
 DUMP_FILES	  = DUMP/GenGraphs.cpp 
 LEX_FILES	  = LEXER/lexer.cpp LEXER/token.cpp LEXER/parser.cpp
 WOLFRAM_FILES = WOLFRAM_SIGMA/VerifyInstrSet.cpp WOLFRAM_SIGMA/WolfFunc.cpp WOLFRAM_SIGMA/CalcFunc.cpp WOLFRAM_SIGMA/SimplifyTree.cpp WOLFRAM_SIGMA/CalcExpression.cpp WOLFRAM_SIGMA/parseWolfTree.cpp
-# ASM_FILES 	  = ASSEMBLER/ArrPtrCtor.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeWriter.cpp ASSEMBLER/Compiler.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/OpcodeReader.cpp ASSEMBLER/SpecTxtReader.cpp
+ASM_FILES 	  = ASSEMBLER/ArrPtrCtor.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeWriter.cpp ASSEMBLER/Compiler.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/OpcodeReader.cpp ASSEMBLER/SpecTxtReader.cpp
 # SPU_FILES 	  = SPU/CalcFunc.cpp SPU/spuCtor.cpp SPU/spuErrPrint.cpp SPU/spuExecutor.cpp SPU/SpuVerifySort.cpp SPU/SpuArgParser.cpp
 
 DEFAULT_SRC   ?=  src/data.txt
@@ -46,6 +46,11 @@ lex: LEXER/main_lex.cpp $(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) 
 	$(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) $(LEX_FILES)
 	@echo "-----------------------------------------------------------------------------------------"
 
+asm: ASSEMBLER/main_asm.cpp $(COMMON_FILES) $(ASM_FILES)
+	@echo "-----------------------------------------------------------------------------------------"
+	g++ -o asm_program $(FLAGS) ASSEMBLER/main_asm.cpp $(COMMON_INCLUDES) $(GEN_INCLUDES) $(ASM_INCLUDES) $(COMMON_FILES) $(ASM_FILES)
+	@echo "-----------------------------------------------------------------------------------------"
+
 
 run-wolf: wolf
 	./wolf_program $(DEFAULT_SRC) $(DEFAULT_LATEX)
@@ -62,10 +67,19 @@ run-gen: gen
 run-lex: lex
 	./lex_program
 
-run: run-wolf
+run-asm: asm
+	./asm_program $(DEFAULT_INPUT) $(DEFAULT_OUTPUT)
+
+run-asm-args: asm
+	@if [ "$(ARGS)" = "" ]; then \
+		echo "Usage: make run-comp-args ARGS=\"input.asm output.asm\""; \
+	fi
+	./asm_program $(ARGS)
+	
+run: run-lex
 
 clean:
-	rm -f wolf_program gen_program lex_program
+	rm -f wolf_program gen_program lex_program asm_program
 
 help:
 	@echo "Available commands:"
@@ -76,4 +90,4 @@ help:
 	@echo ""
 	@echo "  make clean                    - remove compiled programs"
 
-.PHONY: wolf gen run-wolf run-wolf-args run-gen run-lex run clean help
+.PHONY: wolf gen run-wolf run-wolf-args run-gen run-lex run-asm run-asm-args run clean help

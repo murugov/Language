@@ -1,257 +1,229 @@
-[2025-12-16 18:33:55] DEBUG Created id for stack "tokens"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "tokens" is created
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000610 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000690 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000006d0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000710 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000790 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000007d0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000810 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000890 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "tokens" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000008d0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000910 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000950 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000990 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000a10 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000a50 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000a90 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000ad0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "tokens" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000b50 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000b90 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000c10 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000c50 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000cd0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000d10 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000d90 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000dd0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000e50 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000e90 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000f10 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000f50 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000f90 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000000fd0 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001010 in "tokens"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Lexer is created
-[2025-12-16 18:33:55] DEBUG Created id for stack "name_tables"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "name_tables" is created
-[2025-12-16 18:33:55] DEBUG Created id for hash-table "global_table"
-[2025-12-16 18:33:55] INFO  Hash-table "global_table" created
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001050 in "name_tables"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG Created id for stack "stk"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "stk" is created
-[2025-12-16 18:33:55] DEBUG PUSH 0x6020000003f0 in "stk"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG Created id for stack "stk"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "stk" is created
-[2025-12-16 18:33:55] DEBUG PUSH 0x6020000004b0 in "stk"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG Created id for stack "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ret" is created
-[2025-12-16 18:33:55] DEBUG Created id for stack "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ids" is created
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001090 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001090 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001510 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 1 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001510 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 1 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000011d0 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 2 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ret" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000014d0 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ids" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 3 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x6040000014d0 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 3 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001210 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 4 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ret" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001250 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ids" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 5 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001250 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 5 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000012d0 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 6 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001390 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 7 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001390 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 7 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000013d0 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 8 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ret" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001450 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Stack "&stk_ids" is reallocated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 9 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001450 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 9 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001490 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 10 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001410 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 11 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001410 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 11 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001490 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 10 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x6040000013d0 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 8 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x6040000012d0 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 6 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001310 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 12 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001290 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 13 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001290 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 13 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001310 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 12 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001210 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 4 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x6040000011d0 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 2 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001110 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 14 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001190 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 15 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001190 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 15 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x604000001150 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 16 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001150 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 16 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x604000001110 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 14 from "&stk_ids"
-[2025-12-16 18:33:55] DEBUG PUSH 0x6040000010d0 in "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG PUSH 17 in "&stk_ids"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 0x6040000010d0 from "&stk_ret"
-[2025-12-16 18:33:55] INFO  Hash is updated
-[2025-12-16 18:33:55] DEBUG POP 17 from "&stk_ids"
-[2025-12-16 18:33:55] INFO  Stack "&stk_ret" is destroyed
-[2025-12-16 18:33:55] INFO  Stack "&stk_ids" is destroyed
-[2025-12-16 18:33:55] INFO  Stack "tokens" is destroyed
-[2025-12-16 18:33:55] INFO  Lexer is destroed
-[2025-12-16 18:33:55] INFO  Stack "stk" is destroyed
-[2025-12-16 18:33:55] INFO  Stack "stk" is destroyed
-[2025-12-16 18:33:55] INFO  Hash-table "global_table" destroed
-[2025-12-16 18:33:55] INFO  Stack "name_tables" is destroyed
+[2025-12-16 20:57:39] DEBUG Created id for stack "tokens"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "tokens" is created
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000650 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000006d0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000710 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000750 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000790 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000007d0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000810 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000890 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "tokens" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000008d0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000910 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000950 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000009d0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000a10 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000a90 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000ad0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000b50 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "tokens" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000b90 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000c10 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000c50 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000cd0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000d10 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000d90 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000dd0 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000e10 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000e50 in "tokens"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Lexer is created
+[2025-12-16 20:57:39] DEBUG Created id for stack "name_tables"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "name_tables" is created
+[2025-12-16 20:57:39] DEBUG Created id for hash-table "global_table"
+[2025-12-16 20:57:39] INFO  Hash-table "global_table" created
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000e90 in "name_tables"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG Created id for stack "stk"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "stk" is created
+[2025-12-16 20:57:39] DEBUG PUSH 0x602000000310 in "stk"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG Created id for stack "stk"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "stk" is created
+[2025-12-16 20:57:39] DEBUG PUSH 0x6020000003b0 in "stk"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG Created id for stack "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ret" is created
+[2025-12-16 20:57:39] DEBUG Created id for stack "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ids" is created
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000ed0 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000000ed0 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000f10 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 1 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000000f10 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 1 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000f90 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 2 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ret" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000012d0 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ids" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 3 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x6040000012d0 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 3 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001010 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 4 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ret" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001050 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ids" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 5 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001050 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 5 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000010d0 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 6 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001190 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 7 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001190 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 7 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x6040000011d0 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 8 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ret" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001250 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Stack "&stk_ids" is reallocated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 9 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001250 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 9 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001290 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 10 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001210 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 11 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001210 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 11 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001290 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 10 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x6040000011d0 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 8 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x6040000010d0 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 6 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001110 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 12 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000001090 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 13 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001090 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 13 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001110 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 12 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000001010 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 4 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000000f90 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 2 from "&stk_ids"
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000fd0 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 14 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 0x604000000f50 in "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG PUSH 15 in "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000000f50 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 15 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 0x604000000fd0 from "&stk_ret"
+[2025-12-16 20:57:39] INFO  Hash is updated
+[2025-12-16 20:57:39] DEBUG POP 14 from "&stk_ids"
+[2025-12-16 20:57:39] INFO  Stack "&stk_ret" is destroyed
+[2025-12-16 20:57:39] INFO  Stack "&stk_ids" is destroyed
+[2025-12-16 20:57:39] INFO  Stack "tokens" is destroyed
+[2025-12-16 20:57:39] INFO  Lexer is destroed
+[2025-12-16 20:57:39] INFO  Stack "stk" is destroyed
+[2025-12-16 20:57:39] INFO  Stack "stk" is destroyed
+[2025-12-16 20:57:39] INFO  Hash-table "global_table" destroed
+[2025-12-16 20:57:39] INFO  Stack "name_tables" is destroyed

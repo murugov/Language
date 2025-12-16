@@ -1,28 +1,12 @@
-#include "compile.h"
-#include "colors.h"
-
+#include "assembler.hpp"
 #include "AsmInstrSet.cpp"
 
-// #define DEBUG
-#include "DEBUG.h"
 
-
-byte_t hash_table[HASH_TABEL_SIZE] = {0};
+// byte_t hash_table[HASH_TABEL_SIZE] = {0};
 
 AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc)
 {
-    ON_DEBUG(
-            if (IS_BAD_PTR(code))
-                return ERROR;
-            if (IS_BAD_PTR(arr_cmd))
-                return ERROR;
-            if (IS_BAD_PTR(arr_labels))
-                return ERROR;
-            if (IS_BAD_PTR(count_labels))
-                return ERROR;
-            if (IS_BAD_PTR(pc))
-                return ERROR;
-    )
+    ON_DEBUG( if (IS_BAD_PTR(code) || IS_BAD_PTR(arr_cmd) || IS_BAD_PTR(arr_labels) || IS_BAD_PTR(count_labels) || IS_BAD_PTR(pc)) return ASM_ERROR; )
 
     (*pc) = 0;
     bool is_first_pass = !(bool)(*count_labels);
@@ -36,10 +20,10 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
             {
                 printf(ANSI_COLOR_GREEN "pc_label = [%zu]\n" ANSI_COLOR_RESET, write_params.pc);
                 if (strlen(arr_cmd[line].ptr) >= MAX_LEN_CMD + MAX_LEN_LABEL)
-                    return LINE_SIZE_EXCEED;
+                    return ASM_LINE_SIZE_EXCEED;
     
                 AsmErr_t add_label_verd = AddLabel(arr_cmd, line, arr_labels, &(write_params.count_labels), write_params.pc);
-                if (add_label_verd != SUCCESS)
+                if (add_label_verd != ASM_SUCCESS)
                     return add_label_verd;
             }
         }
@@ -51,7 +35,7 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
 
             ssize_t index = 0;
             AsmErr_t search_verd = HashSearch(hash_func, &index);
-            if(search_verd != SUCCESS)
+            if(search_verd != ASM_SUCCESS)
                 return search_verd;
             
             write_params.ptr = arr_cmd[line].ptr;
@@ -59,7 +43,7 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
             write_params.mask = asm_instr_set[index].mask;
             
             AsmErr_t write_verd = (asm_instr_set[index].func)(&write_params);
-            if (write_verd != SUCCESS)
+            if (write_verd != ASM_SUCCESS)
                 return write_verd;
         }
 
@@ -72,47 +56,42 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
     arr_labels = write_params.arr_labels;
     *count_labels = write_params.count_labels;
 
-    return SUCCESS;
+    return ASM_SUCCESS;
 }
 
 
-AsmErr_t AddLabel(line_with_num_t *arr_cmd, size_t line, label_t *arr_labels, size_t *count_labels, size_t pc)
-{
-    ON_DEBUG(
-            if (IS_BAD_PTR(label))
-                return ERROR;
-            if (IS_BAD_PTR(arr_labels))
-                return ERROR;
-            if (IS_BAD_PTR(count_labels))
-                return ERROR;
-    )
+/*HASH_TABLE*/
 
-    hash_t orig_hash = HashCmd(arr_cmd[line].ptr);
-    hash_t index = orig_hash % HASH_TABEL_SIZE;
+// AsmErr_t AddLabel(line_with_num_t *arr_cmd, size_t line, label_t *arr_labels, size_t *count_labels, size_t pc)
+// {
+//     ON_DEBUG( if (IS_BAD_PTR(arr_cmd) || IS_BAD_PTR(arr_labels) || IS_BAD_PTR(count_labels)) return ASM_ERROR; )
+
+//     hash_t orig_hash = HashCmd(arr_cmd[line].ptr);
+//     hash_t index = orig_hash % HASH_TABEL_SIZE;
     
-    if (hash_table[index] == 0)
-        hash_table[index] = 1;
-    else
-    {
-        for (size_t i = 0; i < *count_labels; ++i)
-        {
-            if (arr_labels[i].hash == orig_hash)
-            {
-                if (strcmp(arr_labels[i].name, arr_cmd[line].ptr))
-                    return RE_LABEL;
+//     if (hash_table[index] == 0)
+//         hash_table[index] = 1;
+//     else
+//     {
+//         for (size_t i = 0; i < *count_labels; ++i)
+//         {
+//             if (arr_labels[i].hash == orig_hash)
+//             {
+//                 if (strcmp(arr_labels[i].name, arr_cmd[line].ptr))
+//                     return RE_LABEL;
 
-                break;
-            }
-        }
-    }
+//                 break;
+//             }
+//         }
+//     }
 
-    arr_labels[*count_labels].name = arr_cmd[line].ptr;
-    arr_labels[*count_labels].hash = orig_hash;
-    arr_labels[*count_labels].pc = pc + 3;
-    (*count_labels)++;
+//     arr_labels[*count_labels].name = arr_cmd[line].ptr;
+//     arr_labels[*count_labels].hash = orig_hash;
+//     arr_labels[*count_labels].pc = pc + 3;
+//     (*count_labels)++;
 
-    return SUCCESS;
-}
+//     return SUCCESS;
+// }
 
 
 AsmErr_t HashSearch(hash_t hash_func, ssize_t *index)
@@ -125,9 +104,9 @@ AsmErr_t HashSearch(hash_t hash_func, ssize_t *index)
 
     *index = BinSearch(arr_hash, LEN_INSTR_SET, hash_func);
     if (*index == -1)
-        return UNKNOWN_CMD;
+        return ASM_UNKNOWN_CMD;
     
-    return SUCCESS;
+    return ASM_SUCCESS;
 }
 
 // AsmErr_t HashSearch(hash_t hash_cmd, size_t *index)

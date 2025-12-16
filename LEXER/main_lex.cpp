@@ -10,7 +10,6 @@ int main()
     parserCtor(parser);
 
     node_t* ast = ParseAST(parser);
-    printf("ast: [%p]\n", ast);
     if (ast)
     {
         printf(ANSI_COLOR_GREEN "Successfully parsed!\n" ANSI_COLOR_RESET);

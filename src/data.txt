@@ -1,9 +1,7 @@
-def sort(init a, init b)
+init a = 5;
+if (a)
 {
-    if (a)
-    {
-        init t = a;
-        a = b;
-        b = t;
-    }
+    init t = a;
+    a = b;
+    b = t;
 }
