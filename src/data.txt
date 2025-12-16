@@ -1,0 +1,9 @@
+def sort(init a, init b)
+{
+    if (a)
+    {
+        init t = a;
+        a = b;
+        b = t;
+    }
+}

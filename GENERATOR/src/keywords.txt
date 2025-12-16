@@ -1,0 +1,59 @@
+# keywords
+IF:     "if";
+ELSE:   "else";
+FOR:    "for";
+WHILE:  "while";
+RETURN: "return";
+DEF:    "def";
+INIT:   "init";
+EOF:    "EOF";
+UNDEF:  "UNDEF";
+# brackets and separators
+LPAREN:    "(";
+RPAREN:    ")";
+LBRACKET:  "[";
+RBRACKET:  "]";
+LBRACE:    "{";
+RBRACE:    "}";
+COMMA:     ",";
+SEMICOLON: ";";
+COLON:     ":";
+# bool functions
+EQ:   "=";
+EQEQ: "==";
+NE:   "!=";
+GT:   ">";
+LT:   "<";
+GE:   ">=";
+LE:   "<=";
+# elementary functions
+ADD:  "+";    
+SUB:  "-";    
+MUL:  "*";   
+DIV:  "/";
+POW:  "^";
+SQRT: "sqrt";
+# exponential functions    
+E:   "e";
+LN:  "ln";
+LOG: "log";
+# trigonometric functions  
+SIN: "sin";
+COS: "cos";
+TAN: "tan";
+COT: "cot";
+# hyperbolic functions
+SINH: "sinh";
+COSH: "cosh";
+TANH: "tanh";
+COTH: "coth";
+# inverse trigonometric functions  
+ARCSIN: "arcsin";
+ARCCOS: "arccos";
+ARCTAN: "arctan";
+ARCCOT: "arccot";
+# inverse hyperbolic functions
+ARCSINH: "arcsinh";
+ARCCOSH: "arccosh";
+ARCTANH: "arctanh";
+ARCCOTH: "arccoth";
