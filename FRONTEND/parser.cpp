@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include "./parser.hpp"
 
 #define PATH_TO_DATA "src/data.txt"                 // move to folder CONFIG
 
@@ -129,79 +129,49 @@ void PrintError(parser_t* parser, token_t* token, const char* message)
 }
 
 
-node_t* ParseAST(parser_t *parser)
+node_t* ParseAST(parser_t* parser)
 {
     ON_DEBUG( if (IS_BAD_PTR(parser)) { return NULL; } )
 
-    node_t* program = LINK_('$');
-    if (IS_BAD_PTR(program)) return NULL;
-    
-    node_t* last_stmt = NULL;
+    node_t* program    = NULL;
+    node_t* stmt       = NULL;
+    node_t* last_stmt  = NULL;
     
     while (!CheckToken(parser, HASH_EOF))
     {
-        node_t* stmt = NULL;
-        
         if (CUR_TYPE == ARG_OP && CUR_HASH == HASH_DEF)
         {
             stmt = ParseFunc(parser);
-        } 
-        else if (CUR_TYPE == ARG_OP && CUR_HASH == HASH_IF)
-        {
-            stmt = ParseIf(parser);
-        }
-        else if (CUR_TYPE == ARG_OP && CUR_HASH == HASH_WHILE)
-        {
-            stmt = ParseWhile(parser);
-        }
-        else if (CUR_TYPE == ARG_OP && CUR_HASH == HASH_RETURN)
-        {
-            stmt = ParseReturn(parser);
-        }
-        else if (CUR_TYPE == ARG_VAR)
-        {
-            if (CUR_POS + 1 < parser->lexer->tokens->size &&
-                parser->lexer->tokens->data[CUR_POS + 1]->hash == HASH_EQ)
-            {
-                stmt = ParseAssignment(parser);
-            } 
-            else
-            {
-                stmt = ParseExpression(parser);
-                ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after expression");
-            }
-        }
-        else if (CUR_TYPE == ARG_FUNC)
-        {
-            stmt = ParseFuncCall(parser);
-            ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after function call");
         }
         else
         {
-            stmt = ParseExpression(parser);
-            if (IS_BAD_PTR(stmt)) { ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after expression"); }
+            stmt = ParseStatement(parser);
         }
-        
-        if (IS_BAD_PTR(stmt)) { FreeNodes(program); return NULL; }
-        
-        if (IS_BAD_PTR(program->left))
-        {
-            program->left = stmt;
-            last_stmt     = stmt;
+
+        if (IS_BAD_PTR(stmt)) 
+        { 
+            FreeNodes(program);
+            return NULL; 
         }
-        else
-        {
-            last_stmt->right = stmt;
-            last_stmt        = stmt;
+
+        if (IS_BAD_PTR(last_stmt)) 
+        { 
+            program = stmt; 
         }
+        else 
+        { 
+            last_stmt->right = stmt; 
+        }
+
+        last_stmt = stmt;
     }
-    
+
     set_parents(program, NULL);
     return program;
 }
 
 
-node_t *ParseFunc(parser_t *parser)                 // где-то надо создавать новую hash-talbe
+node_t* ParseFunc(parser_t* parser)
 {
     MatchToken(parser, HASH_DEF);
     
@@ -211,36 +181,40 @@ node_t *ParseFunc(parser_t *parser)                 // где-то надо со
         return NULL;
     }
     
-    token_t *func_name_token = CUR_TOKEN;
+    token_t* func_name_token = CUR_TOKEN;
+
+    node_t* func_node = FUNC_(CUR_START, CUR_LEN);
+    if (IS_BAD_PTR(func_node)) { return NULL; }
+    
     MatchToken(parser, CUR_HASH);
     
-    node_t *params = ParseParams(parser);
+    node_t* params = ParseParams(parser);
     
-    node_t *body = ParseBlock(parser);
+    node_t* body = ParseBlock(parser);
     if (IS_BAD_PTR(body)) 
     { 
         if (params) { FreeNodes(params); } 
         return NULL; 
     }
     
-    node_t *func_node = FUNC_(func_name_token->start, func_name_token->length);
-    if (IS_BAD_PTR(func_node)) 
-    { 
-        if (params) { FreeNodes(params); }
-        if (body)   { FreeNodes(body); }
-        return NULL; 
-    }
-    
     func_node->left  = params;
     func_node->right = body;
+
+    node_t* link_node = LINK_('$');
+    if (IS_BAD_PTR(link_node)) { FreeNodes(func_node); FreeNodes(params); FreeNodes(body); return NULL; }
+
+    link_node->left = func_node;
     
-    if (CUR_NAME_TABLE) { htInsert(CUR_NAME_TABLE, strndup(func_name_token->start, (size_t)func_name_token->length)); }
+    if (CUR_NAME_TABLE) 
+    { 
+        htInsert(CUR_NAME_TABLE, strndup(func_name_token->start, (size_t)func_name_token->length)); 
+    }
     
     return func_node;
 }
 
 
-node_t* ParseParams(parser_t *parser)
+node_t* ParseParams(parser_t* parser)
 {
     if (!ConsumeToken(parser, HASH_LPAREN, "Expected '(' after function name")) { return NULL; }
     
@@ -253,12 +227,6 @@ node_t* ParseParams(parser_t *parser)
     }
     
     do {
-        if (!ConsumeToken(parser, HASH_INIT, "Expected 'init' before parameter name")) 
-        { 
-            if (params) { FreeNodes(params); }
-            return NULL; 
-        }
-        
         if (CUR_TYPE != ARG_VAR)
         {
             PrintError(parser, CUR_TOKEN, "Expected parameter name");
@@ -274,15 +242,12 @@ node_t* ParseParams(parser_t *parser)
         }
 
         node_t* init_node = OP_(HASH_INIT);
-        printf("init_node: [%p]\n", init_node);
         if (IS_BAD_PTR(init_node)) 
         { 
             FreeNodes(param); 
             if (params) { FreeNodes(params); }
             return NULL; 
         }
-        init_node->left = param;
-
 
         if (params == NULL)
         {
@@ -315,8 +280,10 @@ node_t* ParseParams(parser_t *parser)
 }
 
 
-node_t* ParseStatement(parser_t *parser)
+node_t* ParseStatement(parser_t* parser)
 {
+    node_t* stmt = NULL;
+
     if (CUR_TYPE == ARG_OP)
     {
         switch (CUR_HASH)
@@ -326,9 +293,9 @@ node_t* ParseStatement(parser_t *parser)
             case HASH_WHILE:
                 return ParseWhile(parser);
             case HASH_RETURN:
-                return ParseReturn(parser);     
+                return ParseReturn(parser);
             case HASH_INIT:
-                return ParseVarInit(parser);   
+                return ParseVarInit(parser);
             default:
                 break;
         }
@@ -336,16 +303,39 @@ node_t* ParseStatement(parser_t *parser)
 
     if (CUR_TYPE == ARG_VAR)
     {
-        if (parser->lexer->cur_token + 1 < parser->lexer->tokens->size &&
-            parser->lexer->tokens->data[parser->lexer->cur_token + 1]->hash == HASH_EQ)
+        if (CUR_POS + 1 < parser->lexer->tokens->size &&
+            parser->lexer->tokens->data[CUR_POS + 1]->hash == HASH_EQ)
         {
             return ParseAssignment(parser);
         }
     }
     
-    node_t* expr = ParseExpression(parser);
-    ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after statement");
-    return expr;
+    if (CUR_TYPE == ARG_FUNC)
+    {
+        stmt = ParseFuncCall(parser);
+        if (!IS_BAD_PTR(stmt))
+        {
+            node_t* semic_node = OP_(HASH_SEMICOLON);
+            if (IS_BAD_PTR(semic_node)) { FreeNodes(stmt); return NULL; }
+            
+            ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after function call");
+            semic_node->left = stmt;
+            return semic_node;
+        }
+    }
+    
+    stmt = ParseExpression(parser);
+    if (!IS_BAD_PTR(stmt))
+    {
+        node_t* semic_node = OP_(HASH_SEMICOLON);
+        if (IS_BAD_PTR(semic_node)) { FreeNodes(stmt); return NULL; }
+        
+        ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after expression");
+        semic_node->left = stmt;
+        return semic_node;
+    }
+    
+    return NULL;
 }
 
 
@@ -405,10 +395,10 @@ node_t* ParseFactor(parser_t* parser)
     while (MatchToken(parser, HASH_POW))
     {
         node_t* right_node = ParsePrimary(parser);
-        if (IS_BAD_PTR(right_node)) { free(node); return NULL; }
+        if (IS_BAD_PTR(right_node)) { FreeNodes(node); return NULL; }
         
         node_t* op_node = OP_(HASH_POW);
-        if (IS_BAD_PTR(op_node)) { free(node); free(right_node); return NULL; }
+        if (IS_BAD_PTR(op_node)) { FreeNodes(node); FreeNodes(right_node); return NULL; }
         
         op_node->left  = node;
         op_node->right = right_node;
@@ -421,8 +411,7 @@ node_t* ParseFactor(parser_t* parser)
 
 node_t* ParsePrimary(parser_t* parser)
 {
-    if (CUR_HASH == HASH_INIT)
-        return ParseVarInit(parser);
+    if (CUR_HASH == HASH_INIT) { return ParseVarInit(parser); }
 
     switch (CUR_TYPE)
     {
@@ -441,9 +430,9 @@ node_t* ParsePrimary(parser_t* parser)
     if (MatchToken(parser, HASH_LPAREN))
     {
         node_t* expr = ParseExpression(parser);
-        if (IS_BAD_PTR(expr)) return NULL;
+        if (IS_BAD_PTR(expr)) { return NULL; }
         
-        if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after expression")) { free(expr); return NULL; }
+        if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after expression")) { FreeNodes(expr); return NULL; }
         
         return expr;
     }
@@ -463,59 +452,15 @@ node_t* ParseVarInit(parser_t* parser)
         return NULL;
     }
     
-    token_t* var_token = CUR_TOKEN;
-    MatchToken(parser, CUR_HASH);
-
-    if (MatchToken(parser, HASH_SEMICOLON))
-    {
-        node_t *semic_node = OP_(HASH_SEMICOLON);
-        if (IS_BAD_PTR(semic_node)) { return NULL; }
-
-        node_t* init_node = OP_(HASH_INIT);
-        if (IS_BAD_PTR(init_node)) { FreeNodes(semic_node); return NULL; }
-        
-        node_t* var_node = VAR_(var_token->start, var_token->length);
-        if (IS_BAD_PTR(var_node)) { FreeNodes(semic_node); FreeNodes(init_node); return NULL; }
-        
-        semic_node->left = init_node;
-        init_node->left = var_node;
-        
-        if (CUR_NAME_TABLE) 
-        {
-            char* var_name = strndup(var_token->start, (size_t)var_token->length);
-            if (var_name) { htInsert(CUR_NAME_TABLE, strndup(var_token->start, (size_t)var_token->length)); }
-        }  
-
-        return semic_node;
-    }
-    
-    if (!ConsumeToken(parser, HASH_EQ, "Expected '=' or ';' after variable name")) { return NULL; }
-    
-    node_t *semic_node = OP_(HASH_SEMICOLON);
-    if (IS_BAD_PTR(semic_node)) { return NULL; }
-
-    node_t* init_value = ParseExpression(parser);
-    if (IS_BAD_PTR(init_value)) { FreeNodes(semic_node); return NULL; }
-    
-    if (!ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after initialization")) { FreeNodes(semic_node); FreeNodes(init_value); return NULL; }
-    
     node_t* init_node = OP_(HASH_INIT);
-    if (IS_BAD_PTR(init_node)) { FreeNodes(semic_node); FreeNodes(init_value); return NULL; }
-    
-    node_t* var_node = VAR_(CUR_START, CUR_LEN);
-    if (IS_BAD_PTR(var_node)) {  FreeNodes(semic_node); FreeNodes(init_value); FreeNodes(init_node); return NULL; }
-    
-    semic_node->left = init_node;
-    init_node->left  = var_node;
-    init_node->right = init_value;
-    
-    if (CUR_NAME_TABLE) 
-    {
-        char* var_name = strndup(var_token->start, (size_t)var_token->length);
-        if (var_name) { htInsert(CUR_NAME_TABLE, strndup(var_token->start, (size_t)var_token->length)); }
-    }    
+    if (IS_BAD_PTR(init_node)) { return NULL; }
 
-    return semic_node;
+    node_t* assig_node = ParseAssignment(parser);
+    if (IS_BAD_PTR(assig_node)) { FreeNodes(assig_node); return NULL; }
+
+    init_node->left = assig_node;
+    
+    return init_node;
 }
 
 
@@ -527,25 +472,34 @@ node_t* ParseAssignment(parser_t* parser)
         return NULL;
     }
     
+    node_t* var_node = VAR_(CUR_START, CUR_LEN);
+    if (IS_BAD_PTR(var_node)) { return NULL; }
     MatchToken(parser, CUR_HASH);
     
-    if (!ConsumeToken(parser, HASH_EQ, "Expected '=' after variable name")) { return NULL; }
+    if (!ConsumeToken(parser, HASH_EQ, "Expected '=' after variable name")) { FreeNodes(var_node); return NULL; }
     
     node_t* value = ParseExpression(parser);
-    if (IS_BAD_PTR(value)) return NULL;
+    if (IS_BAD_PTR(value)) { FreeNodes(var_node); return NULL; }
     
-    ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after assignment");
+    if (!ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after assignment")) 
+    { 
+        FreeNodes(var_node);
+        FreeNodes(value); 
+        return NULL; 
+    }
+    
+    node_t* semic_node = OP_(HASH_SEMICOLON);
+    if (IS_BAD_PTR(semic_node)) { FreeNodes(var_node); FreeNodes(value); return NULL; }
     
     node_t* assign_node = OP_(HASH_EQ);
-    if (IS_BAD_PTR(assign_node)) { FreeNodes(value); return NULL; }
-    
-    node_t* var_node = VAR_(CUR_START, CUR_LEN);
-    if (IS_BAD_PTR(var_node)) { FreeNodes(assign_node); FreeNodes(value); return NULL; }
+    if (IS_BAD_PTR(assign_node)) { FreeNodes(value); FreeNodes(semic_node); return NULL; }
     
     assign_node->left  = var_node;
     assign_node->right = value;
+
+    semic_node->left = assign_node;
     
-    return assign_node;
+    return semic_node;
 }
 
 
@@ -555,43 +509,57 @@ node_t* ParseIf(parser_t* parser)
     
     if (!ConsumeToken(parser, HASH_LPAREN, "Expected '(' after 'if'")) { return NULL; }
     
+    node_t* if_node = OP_(HASH_IF);
+    if (IS_BAD_PTR(if_node)) { return NULL; }
+
     node_t* condition = ParseCondition(parser);
-    if (IS_BAD_PTR(condition)) return NULL;
+    if (IS_BAD_PTR(condition)) { FreeNodes(if_node); return NULL; }
     
-    if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after condition")) { FreeNodes(condition); return NULL; }
+    if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after condition")) { FreeNodes(if_node); FreeNodes(condition); return NULL; }
     
     node_t* if_body = ParseBlock(parser);
-    if (IS_BAD_PTR(if_body)) { FreeNodes(condition); return NULL; }
-        
-    node_t* else_body = NULL;
-    if (CheckToken(parser, HASH_ELSE))
-    {        
-        MatchToken(parser, HASH_ELSE);
-        else_body = ParseBlock(parser);
-        if (IS_BAD_PTR(else_body)) { FreeNodes(condition); FreeNodes(if_body); return NULL; }        
-    }
-    
-    node_t* if_node = OP_(HASH_IF);
-    if (IS_BAD_PTR(if_node)) { FreeNodes(condition); FreeNodes(if_body); FreeNodes(else_body); return NULL; }
-    
+    if (IS_BAD_PTR(if_body)) { FreeNodes(if_node); FreeNodes(condition); return NULL; }
+
     if_node->left = condition;
     
-    if (else_body)
+
+    node_t* else_body = NULL;
+    node_t* else_node = NULL;
+
+    if (CheckToken(parser, HASH_ELSE))
     {
-        node_t* else_node = OP_(HASH_ELSE);
+        MatchToken(parser, HASH_ELSE);
+        
+        else_body = ParseBlock(parser);
+        if (IS_BAD_PTR(else_body))
+        { FreeNodes(if_node); FreeNodes(condition); FreeNodes(if_body); return NULL; }
+        
+        else_node = OP_(HASH_ELSE);
         if (IS_BAD_PTR(else_node)) { FreeNodes(if_node); FreeNodes(condition); FreeNodes(if_body); FreeNodes(else_body); return NULL; }
         
+        if_node->right = else_node;
         else_node->left = if_body;
         else_node->right = else_body;
-        
-        if_node->right = else_node;
     }
     else
     {
         if_node->right = if_body;
     }
+
+    node_t* link_node = LINK_('$');
+    if (IS_BAD_PTR(link_node)) 
+    {
+        FreeNodes(if_node);
+        FreeNodes(condition);
+        FreeNodes(if_body);
+        if (!IS_BAD_PTR(else_body)) { FreeNodes(else_body); }
+        if (!IS_BAD_PTR(else_node)) { FreeNodes(else_node); }
+        return NULL; 
+    }
     
-    return if_node;
+    link_node->left = if_node;
+
+    return link_node;
 }
 
 
@@ -600,22 +568,27 @@ node_t* ParseWhile(parser_t* parser)
     MatchToken(parser, HASH_WHILE);
     
     if (!ConsumeToken(parser, HASH_LPAREN, "Expected '(' after 'while'")) { return NULL; }
-    
+
     node_t* condition = ParseCondition(parser);
-    if (IS_BAD_PTR(condition)) return NULL;
+    if (IS_BAD_PTR(condition)) { return NULL; }
     
     if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after condition")) { FreeNodes(condition); return NULL; }
-        
+    
     node_t* body = ParseBlock(parser);
     if (IS_BAD_PTR(body)) { FreeNodes(condition); return NULL; }
-        
+    
     node_t* while_node = OP_(HASH_WHILE);
     if (IS_BAD_PTR(while_node)) { FreeNodes(condition); FreeNodes(body); return NULL; }
     
     while_node->left = condition;
     while_node->right = body;
+
+    node_t* link_node = LINK_('$');
+    if (IS_BAD_PTR(link_node)) { FreeNodes(body); FreeNodes(condition); FreeNodes(while_node); return NULL; }
     
-    return while_node;
+    link_node->left = while_node;
+    
+    return link_node;
 }
 
 
@@ -624,9 +597,13 @@ node_t* ParseReturn(parser_t* parser)
     MatchToken(parser, HASH_RETURN);
     
     node_t* value = ParseExpression(parser);
-    if (IS_BAD_PTR(value)) return NULL;
+    if (IS_BAD_PTR(value)) { return NULL; }
     
-    ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after return");
+    if (!ConsumeToken(parser, HASH_SEMICOLON, "Expected ';' after return")) 
+    { 
+        FreeNodes(value); 
+        return NULL; 
+    }
     
     node_t* return_node = OP_(HASH_RETURN);
     if (IS_BAD_PTR(return_node)) { FreeNodes(value); return NULL; }
@@ -657,25 +634,29 @@ node_t* ParseFuncCall(parser_t* parser)
     {
         do {
             node_t* arg = ParseExpression(parser);
-            if (IS_BAD_PTR(arg)) { FreeNodes(args); return NULL; }
+            if (IS_BAD_PTR(arg)) { if (!IS_BAD_PTR(args)) { FreeNodes(args); } return NULL; }
             
-            if (IS_BAD_PTR(args))
+            if (args == NULL)
             {
-                args     = arg;
+                args = arg;
                 last_arg = arg;
             }
             else
             {
-                last_arg->left = arg;
-                last_arg       = arg;
+                last_arg->right = arg;
+                last_arg = arg;
             }
         } while (MatchToken(parser, HASH_COMMA));
         
-        if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after arguments")) { FreeNodes(args); return NULL; }
+        if (!ConsumeToken(parser, HASH_RPAREN, "Expected ')' after arguments")) 
+        { 
+            if (!IS_BAD_PTR(args)) { FreeNodes(args); } 
+            return NULL; 
+        }
     }
     
     node_t* call_node = FUNC_(func_token->start, func_token->length);
-    if (IS_BAD_PTR(call_node)) { FreeNodes(args); return NULL; }
+    if (IS_BAD_PTR(call_node)) { if (!IS_BAD_PTR(args)) { FreeNodes(args); } return NULL; }
     
     call_node->left = args;
     
@@ -686,7 +667,7 @@ node_t* ParseFuncCall(parser_t* parser)
 node_t* ParseCondition(parser_t* parser)
 {
     node_t* left_node = ParseExpression(parser);
-    if (IS_BAD_PTR(left_node)) return NULL;
+    if (IS_BAD_PTR(left_node)) { return NULL; }
     
     if (CheckToken(parser, HASH_LT)   ||
         CheckToken(parser, HASH_GT)   ||
@@ -714,11 +695,11 @@ node_t* ParseCondition(parser_t* parser)
 
 
 node_t* ParseBlock(parser_t* parser)
-{    
-    if (!ConsumeToken(parser, HASH_LBRACE, "Expected '{'")) return NULL;
+{
+    if (!ConsumeToken(parser, HASH_LBRACE, "Expected '{'")) { return NULL; }
     
     node_t* first_stmt = NULL;
-    node_t* last_stmt  = NULL;
+    node_t* last_stmt = NULL;
     
     while (!CheckToken(parser, HASH_RBRACE) && !CheckToken(parser, HASH_EOF))
     {
@@ -729,15 +710,15 @@ node_t* ParseBlock(parser_t* parser)
             return NULL;
         }
         
-        if (IS_BAD_PTR(first_stmt))
+        if (first_stmt == NULL)
         {
             first_stmt = stmt;
-            last_stmt  = stmt;
+            last_stmt = stmt;
         }
         else
         {
             last_stmt->right = stmt;
-            last_stmt        = stmt;
+            last_stmt = stmt;
         }
     }
     
@@ -761,7 +742,7 @@ node_t* ParseVar(parser_t* parser)
     
     node_t* var_node = VAR_(CUR_START, CUR_LEN);
     MatchToken(parser, CUR_HASH);
-        
+    
     return var_node;
 }
 
@@ -775,9 +756,9 @@ node_t* ParseNum(parser_t* parser)
     }
     
     token_t* num_token = CUR_TOKEN;
-    MatchToken(parser, CUR_HASH);                                           // опасный момент, проблема может скрываться в lexer.cpp, когда идёт сохранение double -> hash_t
+    MatchToken(parser, CUR_HASH);
     
-    double value = 0.0;
+    double value = 0.0;                                             // переделать
     int num_digits = 0;
     sscanf(num_token->start, "%lg%n", &value, &num_digits);
     

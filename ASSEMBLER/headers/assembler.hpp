@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include "IsBadPtr.hpp"
 #include "logger.hpp"
+#include "hash_table.hpp"
 #include "colors.hpp"
 
 #define SIGNATURE  {'A', 'M'}
@@ -117,7 +118,7 @@ struct wrap_t
 
 
 AsmErr_t VerifyAsmInstrSetSort();
-hash_t HashCmd(const char *buffer);
+// hash_t HashCmd(const char *buffer);
 
 struct line_with_num_t
 {
@@ -132,10 +133,10 @@ line_with_num_t* SpecTxtReader(FILE *SourceFile, char* buffer, size_t *count_lin
 AsmErr_t CodeWriter(FILE *ByteCode, line_with_num_t *arr_ptr, size_t count_n);
 
 AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc);
-AsmErr_t AddLabel(line_with_num_t *arr_cmd, size_t line, label_t *arr_labels, size_t *count_labels, size_t pc);
-AsmErr_t HashSearch(hash_t hash_cmd, ssize_t *index);
+// AsmErr_t AddLabel(line_with_num_t *arr_cmd, size_t line, label_t *arr_labels, size_t *count_labels, size_t pc);
+// AsmErr_t HashSearch(hash_t hash_cmd, ssize_t *index);
 //int CmpForBinSearch(const void *a, const void *b);
-int LabelCmpByHash(const void *a, const void *b);
+// int LabelCmpByHash(const void *a, const void *b);
 
 void AsmErrPrint(char *SourceFile, char *ByteCode, AsmErr_t verd);
 void AsmDtor(char *buffer, line_with_num_t *arr_ptr);

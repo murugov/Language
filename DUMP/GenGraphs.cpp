@@ -1,4 +1,5 @@
 #include "dump.hpp"
+#include "KeywordSet.cpp"
 
 
 static size_t number_trees = 0;
@@ -112,6 +113,19 @@ genErr_t GenTrees(node_t *node, const char *func)
 // }
 
 
+static const char* get_op_string(hash_t op_hash)
+{
+    for (size_t i = 0; i < LEN_KEYWORD_SET; ++i)
+    {
+        if (keyword_set[i].hash == op_hash)
+        {
+            return keyword_set[i].name;
+        }
+    }
+    return "UNKNOWN_OP";
+}
+
+
 genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
 {
     ON_DEBUG( if (IS_BAD_PTR(src) || IS_BAD_PTR(tree))  return GEN_ERROR; )
@@ -143,22 +157,26 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
     StackPush(&stk_ret, tree->root);
     StackPush(&stk_ids, number_nodes);
     
+
+    
     #pragma GCC diagnostic push          
     #pragma GCC diagnostic ignored "-Wformat"
 
-    
     if (tree->root->type == ARG_NUM)
-        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-            number_nodes, tree->root, tree->root->parent, tree->root->type, tree->root->item, tree->root->left, tree->root->right);
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+            number_nodes, tree->root, tree->root->parent, tree->root->item, tree->root->left, tree->root->right);
     else if (tree->root->type == ARG_OP)
-        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %zu | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-            number_nodes, tree->root, tree->root->parent, tree->root->type, tree->root->item, tree->root->left, tree->root->right);
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+            number_nodes, tree->root, tree->root->parent, get_op_string(tree->root->item.op), tree->root->left, tree->root->right);
     else if (tree->root->type == ARG_LINK)
-        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-            number_nodes, tree->root, tree->root->parent, tree->root->type, tree->root->item, tree->root->left, tree->root->right);
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_LINK | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+            number_nodes, tree->root, tree->root->parent, tree->root->item.link, tree->root->left, tree->root->right);
+    else if (tree->root->type == ARG_VAR)
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_VAR | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+            number_nodes, tree->root, tree->root->parent, tree->root->item.var, tree->root->left, tree->root->right);
     else
-        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-            number_nodes, tree->root, tree->root->parent, tree->root->type, tree->root->item, tree->root->left, tree->root->right);
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_FUNC | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+            number_nodes, tree->root, tree->root->parent, tree->root->item.func, tree->root->left, tree->root->right);
     
     #pragma GCC diagnostic pop  
 
@@ -180,17 +198,20 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
             #pragma GCC diagnostic ignored "-Wformat"
 
             if (current_node->left->type == ARG_NUM)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->left, current_node->left->parent, current_node->left->type, current_node->left->item, current_node->left->left, current_node->left->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->left, current_node->left->parent, current_node->left->item, current_node->left->left, current_node->left->right);
             else if (current_node->left->type == ARG_OP)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %zu | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->left, current_node->left->parent, current_node->left->type, current_node->left->item, current_node->left->left, current_node->left->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->left, current_node->left->parent, get_op_string(current_node->left->item.op), current_node->left->left, current_node->left->right);
             else if (current_node->left->type == ARG_LINK)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->left, current_node->left->parent, current_node->left->type, current_node->left->item, current_node->left->left, current_node->left->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_LINK | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->left, current_node->left->parent, current_node->left->item.link, current_node->left->left, current_node->left->right);
+            else if (current_node->left->type == ARG_VAR)
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_VAR | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->left, current_node->left->parent, current_node->left->item.var, current_node->left->left, current_node->left->right);
             else
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->left, current_node->left->parent, current_node->left->type, current_node->left->item, current_node->left->left, current_node->left->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_FUNC | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->left, current_node->left->parent, current_node->left->item.func, current_node->left->left, current_node->left->right);
             
             #pragma GCC diagnostic pop  
 
@@ -207,17 +228,20 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
             #pragma GCC diagnostic ignored "-Wformat"
 
             if (current_node->right->type == ARG_NUM)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->right, current_node->right->parent, current_node->right->type, current_node->right->item, current_node->right->left, current_node->right->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->right, current_node->right->parent, current_node->right->item, current_node->right->left, current_node->right->right);
             else if (current_node->right->type == ARG_OP)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %zu | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->right, current_node->right->parent, current_node->right->type, current_node->right->item, current_node->right->left, current_node->right->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->right, current_node->right->parent, get_op_string(current_node->right->item.op), current_node->right->left, current_node->right->right);
             else if (current_node->right->type == ARG_LINK)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->right, current_node->right->parent, current_node->right->type, current_node->right->item, current_node->right->left, current_node->right->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_LINK | data = %c | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->right, current_node->right->parent, current_node->right->item.link, current_node->right->left, current_node->right->right);
+            else if (current_node->right->type == ARG_VAR)
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_VAR | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->right, current_node->right->parent, current_node->right->item.var, current_node->right->left, current_node->right->right);
             else
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = %d | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
-                    number_nodes, current_node->right, current_node->right->parent, current_node->right->type, current_node->right->item, current_node->right->left, current_node->right->right);
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_FUNC | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                    number_nodes, current_node->right, current_node->right->parent, current_node->right->item.func, current_node->right->left, current_node->right->right);
             
             #pragma GCC diagnostic pop  
 

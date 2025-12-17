@@ -1,6 +1,8 @@
 #ifndef DUMP_HPP
 #define DUMP_HPP
 
+#include "CONFIG.hpp"
+
 #include "tree.hpp"
 
 enum genErr_t

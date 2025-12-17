@@ -11,35 +11,23 @@ digraph G {
 	ranksep=0.5;
 	node[fontsize=9, shape=box, width=0.7, height=0.4, style="filled, rounded", fontname="Arial"];
 
-	n0 [shape=record, label="{ptr = 0x604000000ed0 | parent = 0x0 | type = 0 | data = $ | {<left> left = 0x604000000f10 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n1 [shape=record, label="{ptr = 0x604000000f10 | parent = 0x604000000ed0 | type = 2 | data = 59 | {<left> left = 0x604000000f90 | <right> right = 0x6040000012d0}}", fillcolor="#87CEEB", color="black"]
+	n0 [shape=record, label="{ptr = 0x604000000d10 | parent = 0x0 | type = ARG_FUNC | data = f | {<left> left = 0x604000000f10 | <right> right = 0x604000000fd0}}", fillcolor="#87CEEB", color="black"]
+	n1 [shape=record, label="{ptr = 0x604000000f10 | parent = 0x604000000d10 | type = ARG_OP | data = , | {<left> left = 0x604000000e50 | <right> right = 0x604000000ed0}}", fillcolor="#87CEEB", color="black"]
 	n0:left -> n1
-	n2 [shape=record, label="{ptr = 0x604000000f90 | parent = 0x604000000f10 | type = 2 | data = 3237136 | {<left> left = 0x604000000fd0 | <right> right = 0x604000000f50}}", fillcolor="#87CEEB", color="black"]
-	n1:left -> n2
-	n3 [shape=record, label="{ptr = 0x6040000012d0 | parent = 0x604000000f10 | type = 2 | data = 3357 | {<left> left = 0x604000001010 | <right> right = 0x604000001050}}", fillcolor="#87CEEB", color="black"]
-	n1:right -> n3
-	n4 [shape=record, label="{ptr = 0x604000001010 | parent = 0x6040000012d0 | type = 3 | data = a | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
+	n2 [shape=record, label="{ptr = 0x604000000fd0 | parent = 0x604000000d10 | type = ARG_OP | data = ; | {<left> left = 0x604000001010 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
+	n0:right -> n2
+	n3 [shape=record, label="{ptr = 0x604000001010 | parent = 0x604000000fd0 | type = ARG_OP | data = = | {<left> left = 0x604000000f50 | <right> right = 0x604000000f90}}", fillcolor="#87CEEB", color="black"]
+	n2:left -> n3
+	n4 [shape=record, label="{ptr = 0x604000000f50 | parent = 0x604000001010 | type = ARG_VAR | data = a | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
 	n3:left -> n4
-	n5 [shape=record, label="{ptr = 0x604000001050 | parent = 0x6040000012d0 | type = 2 | data = 59 | {<left> left = 0x6040000010d0 | <right> right = 0x604000001190}}", fillcolor="#87CEEB", color="black"]
+	n5 [shape=record, label="{ptr = 0x604000000f90 | parent = 0x604000001010 | type = ARG_NUM | data = 0 | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
 	n3:right -> n5
-	n6 [shape=record, label="{ptr = 0x6040000010d0 | parent = 0x604000001050 | type = 2 | data = 3237136 | {<left> left = 0x604000001110 | <right> right = 0x604000001090}}", fillcolor="#87CEEB", color="black"]
-	n5:left -> n6
-	n7 [shape=record, label="{ptr = 0x604000001190 | parent = 0x604000001050 | type = 2 | data = 61 | {<left> left = 0x6040000011d0 | <right> right = 0x604000001250}}", fillcolor="#87CEEB", color="black"]
-	n5:right -> n7
-	n8 [shape=record, label="{ptr = 0x6040000011d0 | parent = 0x604000001190 | type = 3 | data = b | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n7:left -> n8
-	n9 [shape=record, label="{ptr = 0x604000001250 | parent = 0x604000001190 | type = 2 | data = 61 | {<left> left = 0x604000001290 | <right> right = 0x604000001210}}", fillcolor="#87CEEB", color="black"]
-	n7:right -> n9
-	n10 [shape=record, label="{ptr = 0x604000001290 | parent = 0x604000001250 | type = 3 | data = } | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n9:left -> n10
-	n11 [shape=record, label="{ptr = 0x604000001210 | parent = 0x604000001250 | type = 3 | data = t | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n9:right -> n11
-	n12 [shape=record, label="{ptr = 0x604000001110 | parent = 0x6040000010d0 | type = 3 | data = a | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n6:left -> n12
-	n13 [shape=record, label="{ptr = 0x604000001090 | parent = 0x6040000010d0 | type = 3 | data = a | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n6:right -> n13
-	n14 [shape=record, label="{ptr = 0x604000000fd0 | parent = 0x604000000f90 | type = 3 | data = if | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n2:left -> n14
-	n15 [shape=record, label="{ptr = 0x604000000f50 | parent = 0x604000000f90 | type = 1 | data = 5 | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
-	n2:right -> n15
+	n6 [shape=record, label="{ptr = 0x604000000e50 | parent = 0x604000000f10 | type = ARG_OP | data = , | {<left> left = 0x604000000d90 | <right> right = 0x604000000e10}}", fillcolor="#87CEEB", color="black"]
+	n1:left -> n6
+	n7 [shape=record, label="{ptr = 0x604000000ed0 | parent = 0x604000000f10 | type = ARG_OP | data = init | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
+	n1:right -> n7
+	n8 [shape=record, label="{ptr = 0x604000000d90 | parent = 0x604000000e50 | type = ARG_OP | data = init | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
+	n6:left -> n8
+	n9 [shape=record, label="{ptr = 0x604000000e10 | parent = 0x604000000e50 | type = ARG_OP | data = init | {<left> left = 0x0 | <right> right = 0x0}}", fillcolor="#87CEEB", color="black"]
+	n6:right -> n9
 }

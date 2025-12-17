@@ -1,7 +1,4 @@
-init a = 5;
-if (a)
+def f(a, b, c)
 {
-    init t = a;
-    a = b;
-    b = t;
+    a = 0;
 }

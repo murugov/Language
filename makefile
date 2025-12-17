@@ -7,7 +7,7 @@ GEN_INCLUDES		= -I./GENERATOR/headers -I./GENERATOR/src -I./GENERATOR/reports
 TREE_INCLUDES		= -I./TREE/headers
 HT_INCLUDES			= -I./HASH_TABLE/headers
 DUMP_INCLUDES		= -I./DUMP/headers
-LEX_INCLUDES		= -I./LEXER/headers
+FRONT_INCLUDES		= -I./FRONTEND/headers
 WOLFRAM_INCLUDES    = -I./WOLFRAM_SIGMA/headers
 ASM_INCLUDES  		= -I./ASSEMBLER/headers
 # SPU_INCLUDES  		= -I./SPU/headers
@@ -16,7 +16,7 @@ COMMON_FILES  = COMMON/GetHash.cpp COMMON/IsBadPtr.cpp COMMON/LineCounter.cpp CO
 TREE_FILES 	  = TREE/TreeFunc.cpp
 HT_FILES	  = HASH_TABLE/HashTableFunc.cpp
 DUMP_FILES	  = DUMP/GenGraphs.cpp 
-LEX_FILES	  = LEXER/lexer.cpp LEXER/token.cpp LEXER/parser.cpp
+FRONT_FILES	  = FRONTEND/lexer.cpp FRONTEND/token.cpp FRONTEND/parser.cpp
 WOLFRAM_FILES = WOLFRAM_SIGMA/VerifyInstrSet.cpp WOLFRAM_SIGMA/WolfFunc.cpp WOLFRAM_SIGMA/CalcFunc.cpp WOLFRAM_SIGMA/SimplifyTree.cpp WOLFRAM_SIGMA/CalcExpression.cpp WOLFRAM_SIGMA/parseWolfTree.cpp
 ASM_FILES 	  = ASSEMBLER/ArrPtrCtor.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeWriter.cpp ASSEMBLER/Compiler.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/OpcodeReader.cpp ASSEMBLER/SpecTxtReader.cpp
 # SPU_FILES 	  = SPU/CalcFunc.cpp SPU/spuCtor.cpp SPU/spuErrPrint.cpp SPU/spuExecutor.cpp SPU/SpuVerifySort.cpp SPU/SpuArgParser.cpp
@@ -39,11 +39,11 @@ gen: GENERATOR/main_gen.cpp $(COMMON_FILES)
 	g++ -o gen_program $(FLAGS) GENERATOR/main_gen.cpp $(COMMON_INCLUDES) $(CONFIG_INCLUDES) $(STK_INCLUDES) $(GEN_INCLUDES) $(COMMON_FILES)
 	@echo "-----------------------------------------------------------------------------------------"
 
-lex: LEXER/main_lex.cpp $(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) $(LEX_FILES)
+front: FRONTEND/main_front.cpp $(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) $(LEX_FILES)
 	@echo "-----------------------------------------------------------------------------------------"
-	g++ -o lex_program $(FLAGS) LEXER/main_lex.cpp $(COMMON_INCLUDES) $(CONFIG_INCLUDES) \
-	$(STK_INCLUDES) $(TREE_INCLUDES) $(HT_INCLUDES) $(DUMP_INCLUDES) $(GEN_INCLUDES) $(LEX_INCLUDES) \
-	$(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) $(LEX_FILES)
+	g++ -o front_program $(FLAGS) FRONTEND/main_front.cpp $(COMMON_INCLUDES) $(CONFIG_INCLUDES) \
+	$(STK_INCLUDES) $(TREE_INCLUDES) $(HT_INCLUDES) $(DUMP_INCLUDES) $(GEN_INCLUDES) $(FRONT_INCLUDES) \
+	$(COMMON_FILES) $(TREE_FILES) $(HT_FILES) $(DUMP_FILES) $(FRONT_FILES)
 	@echo "-----------------------------------------------------------------------------------------"
 
 asm: ASSEMBLER/main_asm.cpp $(COMMON_FILES) $(ASM_FILES)
@@ -64,8 +64,8 @@ run-wolf-args: wolf
 run-gen: gen
 	./gen_program
 
-run-lex: lex
-	./lex_program
+run-front: front
+	./front_program
 
 run-asm: asm
 	./asm_program $(DEFAULT_INPUT) $(DEFAULT_OUTPUT)
@@ -76,10 +76,10 @@ run-asm-args: asm
 	fi
 	./asm_program $(ARGS)
 	
-run: run-lex
+run: run-front
 
 clean:
-	rm -f wolf_program gen_program lex_program asm_program
+	rm -f wolf_program gen_program front_program asm_program
 
 help:
 	@echo "Available commands:"
@@ -90,4 +90,4 @@ help:
 	@echo ""
 	@echo "  make clean                    - remove compiled programs"
 
-.PHONY: wolf gen run-wolf run-wolf-args run-gen run-lex run-asm run-asm-args run clean help
+.PHONY: wolf gen run-wolf run-wolf-args run-gen run-front run-asm run-asm-args run clean help

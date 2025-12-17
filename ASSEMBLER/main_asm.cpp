@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         {
             printf(ANSI_COLOR_RED "Not sorted asm_instr_set!\n" ANSI_COLOR_RESET);
             printf(ANSI_COLOR_RED "TODO: generation AsmInstrSet.cpp with using \"make run-gen\"!\n" ANSI_COLOR_RESET);
-            LOG(ERROR, "Not sorted op_instr_set in AsmInstrSet.cpp!");
+            ON_DEBUG( LOG(ERROR, "Not sorted op_instr_set in AsmInstrSet.cpp!"); )
             return EXIT_FAILURE;
         }
     

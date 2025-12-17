@@ -4,7 +4,7 @@
 #include "tree.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
-#include "./hash_table.hpp"
+#include "hash_table.hpp"
 #include "colors.hpp"
 #include "dump.hpp"
 

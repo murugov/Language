@@ -24,13 +24,6 @@ struct lexer_t
     const char*      file_name;
 };
 
-struct keyword_t
-{
-    type_t      type;
-    const char* name;
-    int         len;
-    hash_t      hash;
-};
 
 char **DataReader(FILE *SourceFile, char *buffer, int *count_line);
 

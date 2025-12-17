@@ -112,6 +112,13 @@ struct tree_t
     tree_canary_t canary_2;
 };
 
+struct keyword_t
+{
+    type_t      type;
+    const char* name;
+    int         len;
+    hash_t      hash;
+};
 
 TreeErr_t TreeInit(tree_t *tree, const char *name, const char *file, const char *func, size_t line);
 TreeErr_t TreeCtor(tree_t *tree);

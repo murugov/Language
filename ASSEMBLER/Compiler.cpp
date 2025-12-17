@@ -18,7 +18,6 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
         {
             if (is_first_pass)
             {
-                printf(ANSI_COLOR_GREEN "pc_label = [%zu]\n" ANSI_COLOR_RESET, write_params.pc);
                 if (strlen(arr_cmd[line].ptr) >= MAX_LEN_CMD + MAX_LEN_LABEL)
                     return ASM_LINE_SIZE_EXCEED;
     
@@ -94,32 +93,17 @@ AsmErr_t Compilation(byte_t *code, line_with_num_t *arr_cmd, size_t count_cmd, l
 // }
 
 
-AsmErr_t HashSearch(hash_t hash_func, ssize_t *index)
-{
-    ON_DEBUG( if (IS_BAD_PTR(index)) return ERROR; )
-
-    hash_t arr_hash[LEN_INSTR_SET] = {0};
-    for (size_t i = 0; i < LEN_INSTR_SET; ++i)
-        arr_hash[i] = asm_instr_set[i].hash;
-
-    *index = BinSearch(arr_hash, LEN_INSTR_SET, hash_func);
-    if (*index == -1)
-        return ASM_UNKNOWN_CMD;
-    
-    return ASM_SUCCESS;
-}
-
-// AsmErr_t HashSearch(hash_t hash_cmd, size_t *index)
+// AsmErr_t HashSearch(hash_t hash_cmd, size_t *index)             // rename
 // {
-//     ON_DEBUG( if (IS_BAD_PTR(index)) return ERROR; )
+//     ON_DEBUG( if (IS_BAD_PTR(index)) return ASM_ERROR; )
 //     printf("hash_cmd = %zu\n", hash_cmd);
 //     wrap_t *found = (wrap_t*)bsearch(&hash_cmd, asm_instr_set, LEN_INSTR_SET, sizeof(asm_instr_set[0]), CmpForBinSearch);
 //     printf("found = %p\n", found);
 //     if (found == NULL)
-//         return UNKNOWN_CMD;
+//         return ASM_UNKNOWN_CMD;
     
 //     *index = (size_t)(found - asm_instr_set);
-//     return SUCCESS;
+//     return ASM_SUCCESS;
 // }
 
 
@@ -135,14 +119,14 @@ AsmErr_t HashSearch(hash_t hash_func, ssize_t *index)
 // }
 
 
-int LabelCmpByHash(const void *a, const void *b)
-{
-    const label_t *arr_labels_a = (const label_t*)a;
-    const label_t *arr_labels_b = (const label_t*)b;
+// int LabelCmpByHash(const void *a, const void *b)
+// {
+//     const label_t *arr_labels_a = (const label_t*)a;
+//     const label_t *arr_labels_b = (const label_t*)b;
 
-    if (arr_labels_a->hash - arr_labels_b->hash > 0)
-        return 1;
-    if (arr_labels_a->hash - arr_labels_b->hash < 0)
-        return -1;
-    return 0;
-}
+//     if (arr_labels_a->hash - arr_labels_b->hash > 0)
+//         return 1;
+//     if (arr_labels_a->hash - arr_labels_b->hash < 0)
+//         return -1;
+//     return 0;
+// }

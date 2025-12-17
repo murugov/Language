@@ -1,4 +1,4 @@
-#include "./hash_table.hpp"
+#include "hash_table.hpp"
 
 
 htErr_t htInit(ht_t *hash_table, const char *name, const char *file, const char *func, int line)
@@ -73,7 +73,7 @@ const char *htFind(ht_t *hash_table, const char *target)
     
     stk_t<const char*> *stk = hash_table->table[hash_target].stk;
 
-    for (ssize_t i = 1; i < stk->size - 1; ++i)
+    for (ssize_t i = 0; i < stk->size; ++i)
     {
         const char* current_elem = stk->data[i];
         if (strcmp(target, current_elem) == 0)
@@ -140,7 +140,7 @@ htErr_t htRemove(ht_t *hash_table, const char *item)
     bool found = false;
     const char *current_elem = NULL;
     
-    while (hash_table->table[hash_item].stk->size - 2 > 0)
+    while (hash_table->table[hash_item].stk->size > 0)
     {
         StackPop(hash_table->table[hash_item].stk, &current_elem);
         
@@ -155,7 +155,7 @@ htErr_t htRemove(ht_t *hash_table, const char *item)
         }
     }
 
-    while (stk_ret.size - 2 > 0)
+    while (stk_ret.size > 0)
     {
         StackPop(&stk_ret, &current_elem);     
         StackPush(hash_table->table[hash_item].stk, current_elem);
@@ -163,7 +163,7 @@ htErr_t htRemove(ht_t *hash_table, const char *item)
 
     STACK_DTOR(&stk_ret);
 
-    if (hash_table->table[hash_item].stk->size == 2)
+    if (hash_table->table[hash_item].stk->size == 0)
     {
         hash_table->table[hash_item].is_used = 0;
         STACK_DTOR(hash_table->table[hash_item].stk);
