@@ -65,8 +65,8 @@ enum TreeFunc
 
 enum TreeCanary
 {
-    TREE_CANARY_1 = 111,
-    TREE_CANARY_2 = 222
+    TREE_CANARY_1 = 0xBADA55,
+    TREE_CANARY_2 = 0xB16B00B5
 };
 
 struct tree_id
@@ -80,14 +80,14 @@ struct tree_id
 union val
 {
     char   link;
-    double num;
+    int    num;
     hash_t op;
     char*  var;
     char*  func;
 };
 
 val valLINK(char l);
-val valNUM(double n);
+val valNUM(int n);
 val valOP(hash_t o);
 val valVAR(const char* ptr, int len);
 val valFUNC(const char* ptr, int len);
@@ -105,8 +105,8 @@ struct tree_t
 {
     tree_canary_t canary_1;
     node_t        *root;
-    ssize_t       size;
-    ssize_t       capacity;
+    int           size;
+    int           capacity;
     tree_id       id;
     tree_err_t    error;
     tree_canary_t canary_2;

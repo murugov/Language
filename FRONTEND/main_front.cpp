@@ -1,18 +1,20 @@
 #include "./parser.hpp"
 
 
-int main()
+int main()                  // argc/argv
 {
     LogFileOpener(PATH_TO_LOGFILE);
 
     parser_t *parser = (parser_t*)calloc(1, sizeof(parser_t));
-    parserCtor(parser);
+    parserCtor(parser, "src/data.txt");
 
     node_t* ast = ParseAST(parser);
     if (ast)
     {
         printf(ANSI_COLOR_GREEN "Successfully parsed\n" ANSI_COLOR_RESET);
         GenTrees(ast, __func__);
+        FILE* report = fopen("reports/ast.txt", "w");
+        PrintAST(ast, report);
         FreeNodes(ast);
     }
     else

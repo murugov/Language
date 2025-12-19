@@ -9,15 +9,26 @@
 #include "dump.hpp"
 
 
-struct parser_t
+struct ntElem_t
 {
-    lexer_t*      lexer;
-    stk_t<ht_t*>* name_tables;
-    int           cur_name_table;
+    const char*  name;
+    type_t 		 type;
+    int          offset;
+    int          size_of_stk_frm;
 };
 
-lexerErr_t parserCtor(parser_t *parser);
-lexerErr_t parserDtor(parser_t *parser);
+const char *TakeStrFromNT(const void *nt_elem);
+
+struct parser_t
+{
+    lexer_t*                 lexer;
+    stk_t<ht_t<ntElem_t*>*>* name_tables;
+    int                      cur_name_table;
+};
+
+
+frontErr_t parserCtor(parser_t *parser, const char *src);
+frontErr_t parserDtor(parser_t *parser);
 
 int MatchToken(parser_t* parser, hash_t hash);
 int CheckToken(parser_t* parser, hash_t hash);
@@ -43,6 +54,8 @@ node_t* ParseBlock(parser_t* parser);
 node_t* ParseVar(parser_t* parser);
 node_t* ParseNum(parser_t* parser);
 
+void PrintAST(node_t* node, FILE* stream);
+
 #define CUR_TOKEN (parser->lexer->tokens->data[parser->lexer->cur_token])
 #define CUR_TYPE  (CUR_TOKEN->type)
 #define CUR_HASH  (CUR_TOKEN->hash)
@@ -57,7 +70,15 @@ node_t* ParseNum(parser_t* parser);
 #define PREV_LEN   (PREV_TOKEN->length)
 #define PREV_POS   (parser->lexer->cur_token - 1)
 
-#define CUR_NAME_TABLE (parser->name_tables->data[parser->cur_name_table])
+#define NEXT_TOKEN (parser->lexer->tokens->data[parser->lexer->cur_token + 1])
+#define NEXT_TYPE  (NEXT_TOKEN->type)
+#define NEXT_HASH  (NEXT_TOKEN->hash)
+#define NEXT_START (NEXT_TOKEN->start)
+#define NEXT_LEN   (NEXT_TOKEN->length)
+#define NEXT_POS   (parser->lexer->cur_token + 1)
 
+#define CUR_NAME_TABLE      (parser->name_tables->data[parser->cur_name_table])
+#define CUR_NAME_TABLE_POS  (parser->cur_name_table)
+#define CUR_NAME_TABLE_SIZE (parser->name_tables->size)
 
 #endif

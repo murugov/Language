@@ -46,7 +46,7 @@ node_t *NewNode(type_t type, val item, node_t *left, node_t *right)
 }
 
 val valLINK(char l)  { val v; v.link = l; return v; }
-val valNUM(double n) { val v; v.num = n; return v; }
+val valNUM(int n) { val v; v.num = n; return v; }
 val valOP(hash_t o)  { val v; v.op = o; return v; }
 val valVAR(const char* ptr, int len)  { val v; v.var  = strndup(ptr, (size_t)len); return v; }
 val valFUNC(const char* ptr, int len) { val f; f.func = strndup(ptr, (size_t)len); return f; }

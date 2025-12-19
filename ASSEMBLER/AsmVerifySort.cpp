@@ -9,5 +9,6 @@ AsmErr_t VerifyAsmInstrSetSort()
         if (asm_instr_set[elem].hash < asm_instr_set[elem - 1].hash)
             return ASM_ERROR;
     }
+
     return ASM_SUCCESS;
 }

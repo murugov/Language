@@ -18,10 +18,10 @@ char **DataReader(FILE *SourceFile, char *buffer, int *count_line)
 }
 
 
-lexerErr_t LexerInit(lexer_t* lexer, char** lines, int line_count, const char* file_name)
+frontErr_t LexerInit(lexer_t* lexer, char** lines, int line_count, const char* file_name)
 {
     stk_t<token_t*>* tokens = (stk_t<token_t*>*)calloc(1, sizeof(stk_t<token_t*>));
-    if (IS_BAD_PTR(tokens)) return LEX_ERROR;
+    if (IS_BAD_PTR(tokens)) return FRONT_ERROR;
 
     STACK_CTOR(tokens, MIN_STK_LEN);
 
@@ -35,36 +35,36 @@ lexerErr_t LexerInit(lexer_t* lexer, char** lines, int line_count, const char* f
     lexer->cur_pos        = lines[0]; 
     lexer->file_name      = file_name;
 
-    return LEX_SUCCESS;
+    return FRONT_SUCCESS;
 }
 
 
-lexerErr_t LexerCtor(lexer_t *lexer, char **lines, int line_count, const char *file_name)
+frontErr_t LexerCtor(lexer_t *lexer, char **lines, int line_count, const char *file_name)
 {
-    ON_DEBUG( if (IS_BAD_PTR(lexer) || IS_BAD_PTR(lines) || IS_BAD_PTR(file_name)) return LEX_ERROR; )
+    ON_DEBUG( if (IS_BAD_PTR(lexer) || IS_BAD_PTR(lines) || IS_BAD_PTR(file_name)) return FRONT_ERROR; )
 
-    if (LexerInit(lexer, lines, line_count, file_name) != LEX_SUCCESS) { free(lexer); return LEX_ERROR; }
+    if (LexerInit(lexer, lines, line_count, file_name) != FRONT_SUCCESS) { free(lexer); return FRONT_ERROR; }
 
     PeekToken(lexer);
     while (!IS_BAD_PTR(lexer->peeked_token) && (lexer->peeked_token->type != ARG_OP || lexer->peeked_token->hash != HASH_EOF))
     {
-        printf("type: [%d];   cur_pos: [%c];  cur_line = [%d];   cur_col = [%d];\n", lexer->peeked_token->type, *lexer->peeked_token->start, lexer->cur_line, lexer->cur_col);
-        if (AdvanceToken(lexer) == LEX_ERROR) return LEX_ERROR;
+        // printf("cur_type: [%d];   cur_hash: [%zu];   cur_pos: [%c];   cur_line = [%d];   cur_col = [%d];\n", lexer->peeked_token->type, lexer->peeked_token->hash, *lexer->peeked_token->start, lexer->cur_line, lexer->cur_col);
+        if (AdvanceToken(lexer) == FRONT_ERROR) return FRONT_ERROR;
         
         PeekToken(lexer);
     }
-    if (StackPush(lexer->tokens, lexer->peeked_token) != STK_SUCCESS) return LEX_ERROR;
+    if (StackPush(lexer->tokens, lexer->peeked_token) != STK_SUCCESS) return FRONT_ERROR;
     
     lexer->cur_token = 0;
 
     ON_DEBUG( LOG(INFO, "Lexer is created"); )
-    return LEX_SUCCESS;
+    return FRONT_SUCCESS;
 }
 
 
-lexerErr_t LexerDtor(lexer_t* lexer)
+frontErr_t LexerDtor(lexer_t* lexer)
 {
-    ON_DEBUG(if (IS_BAD_PTR(lexer)) return LEX_ERROR;)
+    ON_DEBUG(if (IS_BAD_PTR(lexer)) return FRONT_ERROR;)
     
     if (IS_BAD_PTR(lexer->tokens))
     {
@@ -96,7 +96,7 @@ lexerErr_t LexerDtor(lexer_t* lexer)
     lexer->file_name    = NULL;
     
     ON_DEBUG( LOG(INFO, "Lexer is destroed"); )
-    return LEX_SUCCESS;
+    return FRONT_SUCCESS;
 }
 
 
@@ -113,25 +113,25 @@ token_t *PeekToken(lexer_t* lexer)                      // maybe void
 }
 
 
-lexerErr_t AdvanceToken(lexer_t* lexer)
+frontErr_t AdvanceToken(lexer_t* lexer)
 {
-    ON_DEBUG( if (IS_BAD_PTR(lexer)) { LOG(ERROR, "Token didn't advance"); return LEX_ERROR; } )
+    ON_DEBUG( if (IS_BAD_PTR(lexer)) { LOG(ERROR, "Token didn't advance"); return FRONT_ERROR; } )
     
     token_t *next_token = NextToken(lexer);
-    if (StackPush(lexer->tokens, next_token) != STK_SUCCESS) return LEX_ERROR;
+    if (StackPush(lexer->tokens, next_token) != STK_SUCCESS) return FRONT_ERROR;
     
     lexer->cur_pos = next_token->start + next_token->length;
     lexer->cur_col += next_token->length;
     
     lexer->peeked_token = NULL;
     lexer->cur_token++;
-    return LEX_SUCCESS;
+    return FRONT_SUCCESS;
 }
 
 
-lexerErr_t SkipSpaces(lexer_t* lexer)
+frontErr_t SkipSpaces(lexer_t* lexer)
 {
-    ON_DEBUG( if (IS_BAD_PTR(lexer)) return LEX_ERROR; )
+    ON_DEBUG( if (IS_BAD_PTR(lexer)) return FRONT_ERROR; )
 
     while (!(IS_END(lexer)))
     {
@@ -152,14 +152,13 @@ lexerErr_t SkipSpaces(lexer_t* lexer)
             break;
     }
 
-    return LEX_SUCCESS;
+    return FRONT_SUCCESS;
 }
 
 
 token_t *NextToken(lexer_t* lexer)
 {
-    if (!IS_BAD_PTR(lexer->peeked_token))
-        return lexer->peeked_token;
+    if (!IS_BAD_PTR(lexer->peeked_token)) { return lexer->peeked_token; }
 
     SkipSpaces(lexer);
     if (IS_END(lexer)) return NewToken(ARG_OP, HASH_EOF, "", 0, lexer->cur_line + 1, lexer->cur_col);
@@ -169,8 +168,7 @@ token_t *NextToken(lexer_t* lexer)
     
     int num_digits = 0;
     sscanf(lexer->cur_pos, "%*g%n", &num_digits);
-    if (num_digits)
-        return ReadNum(lexer);
+    if (num_digits) { return ReadNum(lexer); }
 
     hash_t id_hash = GetHash(lexer->cur_pos);
     keyword_t *key = (keyword_t*)bsearch(&id_hash, keyword_set, LEN_KEYWORD_SET, sizeof(keyword_t), CmpHashForBinSearch);
@@ -188,8 +186,7 @@ token_t *NextToken(lexer_t* lexer)
             return NewToken(key->type, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
     }
     
-    if (isalpha(*lexer->cur_pos))
-        return ReadName(lexer);
+    if (isalpha(*lexer->cur_pos)) { return ReadName(lexer); }
     
     lexer->cur_pos++;
     lexer->cur_col++;
@@ -199,11 +196,11 @@ token_t *NextToken(lexer_t* lexer)
 
 static token_t *ReadNum(lexer_t *lexer)
 {
-    double tmp_num = 0.0;
+    int tmp_num = 0.0;
     int num_digits = 0;
-    if (sscanf(lexer->cur_pos, "%lg%n", &tmp_num, &num_digits) != 1) return NULL;
+    if (sscanf(lexer->cur_pos, "%d%n", &tmp_num, &num_digits) != 1) return NULL;
 
-    token_t* token = NewToken(ARG_NUM, (size_t)tmp_num, lexer->cur_pos, num_digits, lexer->cur_line + 1, lexer->cur_col);
+    token_t* token = NewToken(ARG_NUM, 0, lexer->cur_pos, num_digits, lexer->cur_line + 1, lexer->cur_col);
     
     lexer->cur_pos += num_digits;
     lexer->cur_col += num_digits;

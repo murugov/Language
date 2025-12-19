@@ -51,7 +51,7 @@ StackErr_t StackVerify(stk_t<stackElem_T> *ON_DEBUG(stk), StackFunc ON_DEBUG(Inc
 
         if ((stk->error & (STK_BAD_DATA_PTR | STK_WRONG_SIZE | STK_WRONG_CAPACITY)) == 0)
         {
-            for(ssize_t i = stk->size; i < stk->capacity; ++i)
+            for(int i = stk->size; i < stk->capacity; ++i)
             {
                 if (stk->data[i] != STK_POISON)
                 { 

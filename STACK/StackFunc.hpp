@@ -20,7 +20,7 @@ StackErr_t StackInit(stk_t<stackElem_T> *stk, const char *name, const char *file
 
 
 template <typename stackElem_T>
-StackErr_t StackCtor(stk_t<stackElem_T> *stk, ssize_t capacity)
+StackErr_t StackCtor(stk_t<stackElem_T> *stk, int capacity)
 {   
     ON_DEBUG( if (IS_BAD_PTR(stk)) { LOG(ERROR, "STK_BAD_STK_PTR"); return STK_ERROR; } )
 
@@ -41,7 +41,7 @@ StackErr_t StackCtor(stk_t<stackElem_T> *stk, ssize_t capacity)
         return STK_ERROR; 
     }
 
-    for (ssize_t i = 0; i < stk->capacity; ++i) { stk->data[i] = STK_POISON; }
+    for (int i = 0; i < stk->capacity; ++i) { stk->data[i] = STK_POISON; }
 
     ON_DEBUG(
         stk->hash = StkHashFunc(stk);
@@ -191,7 +191,7 @@ StackErr_t StackRealloc(stk_t<stackElem_T> *stk)
     ON_DEBUG( if (IS_BAD_PTR(stk)) { LOG(ERROR, "STK_BAD_STK_PTR"); return STK_ERROR; } )
     ON_ERR_FIND( if (ERR_DETECT(stk, STK_REALLOC)) { LOG(ERROR, "STK_WRONG_REALLOC"); { return STK_ERROR; } } )
 
-    ssize_t new_capacity = stk->capacity << 1;
+    int new_capacity = stk->capacity << 1;
     if (new_capacity <= stk->capacity)
     {
         ON_DEBUG( stk->error |= STK_WRONG_REALLOC; LOG(ERROR, "STK_WRONG_REALLOC"); )
@@ -205,7 +205,7 @@ StackErr_t StackRealloc(stk_t<stackElem_T> *stk)
         return STK_ERROR; 
     }
 
-    for (ssize_t i = stk->capacity; i < new_capacity; ++i) { new_data[i] = STK_POISON; }
+    for (int i = stk->capacity; i < new_capacity; ++i) { new_data[i] = STK_POISON; }
     
     stk->capacity = new_capacity;
     stk->data     = new_data;
@@ -231,7 +231,7 @@ StackErr_t StackRevRealloc(stk_t<stackElem_T> *stk)
     ON_DEBUG( if (IS_BAD_PTR(stk)) { LOG(ERROR, "STK_BAD_STK_PTR"); return STK_ERROR; } )
     ON_ERR_FIND( if (ERR_DETECT(stk, STK_REV_REALLOC)) { LOG(ERROR, "STK_WRONG_REV_REALLOC"); return STK_ERROR; } )
 
-    ssize_t new_capacity = stk->capacity >> 1;
+    int new_capacity = stk->capacity >> 1;
     if (new_capacity < MIN_STK_LEN) { new_capacity = MIN_STK_LEN; }
     
     if (new_capacity < stk->size) { ON_DEBUG( LOG(WARN, "Cannot shrink below current size"); ) return STK_SUCCESS; }
@@ -269,7 +269,7 @@ stk_hash_t StkHashFunc(stk_t<stackElem_T> *stk)
     
     stk_hash_t new_hash = 0;
 
-    for (ssize_t i = 0; i < stk->size; ++i)
+    for (int i = 0; i < stk->size; ++i)
     {
         new_hash = (new_hash << 5) - new_hash + (stk_hash_t)(stk->data[i]);
     }

@@ -61,10 +61,6 @@ void AsmErrPrint(char *SourceFile, char *ByteCode, AsmErr_t verd)
             perror(ANSI_COLOR_RED "Non-existent memory block!\n" ANSI_COLOR_RESET);
             break; 
 
-        case ASM_ARG_NEX:
-            perror(ANSI_COLOR_RED "Non-existent argument!\n" ANSI_COLOR_RESET);
-            break; 
-
         case ASM_UNKNOWN_CMD:
             printf(ANSI_COLOR_RED "Unknown command in %s!\n" ANSI_COLOR_RESET, SourceFile); // return line with error
             break;

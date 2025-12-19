@@ -77,8 +77,8 @@ struct stk_t
     stk_canary_t canary_1;
     stack_id     id;
     stackElem_T* data;
-    ssize_t      size;
-    ssize_t      capacity;
+    int          size;
+    int          capacity;
     stk_canary_t canary_2;
     ON_DEBUG(
     stk_err_t    error;
@@ -94,7 +94,7 @@ template <typename stackElem_T>
 StackErr_t ErrDetect(stk_t<stackElem_T> *stk, StackFunc IncomingFunc, const char *file, const char *func, int line);
 
 template <typename stackElem_T>
-StackErr_t StackCtor(stk_t<stackElem_T> *stk, ssize_t capacity);
+StackErr_t StackCtor(stk_t<stackElem_T> *stk, int capacity);
 
 template <typename stackElem_T>
 StackErr_t StackDtor(stk_t<stackElem_T> *stk);

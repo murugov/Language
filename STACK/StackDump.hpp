@@ -11,7 +11,6 @@ StackErr_t StackDump(stk_t<stackElem_T>* ON_DEBUG(stk), const char* ON_DEBUG(fil
     #define PRINT_ERRCODE_(code) do { if (ERR_CHECK(code) == STK_ERROR) LOG(ERROR, #code); } while(0)
 
     ON_DEBUG(
-        // Вывод кодов ошибок
         PRINT_ERRCODE_(STK_WRONG_CANARY);
         PRINT_ERRCODE_(STK_WRONG_HASH);
         PRINT_ERRCODE_(STK_BAD_DATA_PTR);
@@ -42,15 +41,13 @@ StackErr_t StackDump(stk_t<stackElem_T>* ON_DEBUG(stk), const char* ON_DEBUG(fil
     
             fprintf(LogFile, "%s {\n", stk->id.name);
     
-            // Канарейка 1
             snprintf(str_value, sizeof(str_value), FORMAT_SPECIFIER(stk->canary_1), stk->canary_1);
             fprintf(LogFile, "\tcanary_1 = %s; %s\n", str_value, 
                     (stk->canary_1 == STK_CANARY_1) ? "(OK)" : "(WRONG!)");
     
             fprintf(LogFile, "\tdata[%p] = {\n", stk->data);
     
-            // Вывод данных стека
-            for (ssize_t i = 0; i < stk->capacity; ++i)
+            for (int i = 0; i < stk->capacity; ++i)
             {
                 snprintf(str_value, sizeof(str_value), FORMAT_SPECIFIER(stk->data[i]), stk->data[i]);
                 
@@ -61,42 +58,39 @@ StackErr_t StackDump(stk_t<stackElem_T>* ON_DEBUG(stk), const char* ON_DEBUG(fil
                     annotation = (stk->data[i] == STK_POISON) ? "(POISON)" : "(CORRUPTED!)";
                 }
                 
-                fprintf(LogFile, "\t\t[%zd] = %s; %s\n", i, str_value, annotation);
+                fprintf(LogFile, "\t\t[%d] = %s; %s\n", i, str_value, annotation);
                 
-                // Ограничиваем вывод для больших стеков
                 if (i >= 50 && i < stk->capacity - 5) {
-                    fprintf(LogFile, "\t\t... (%zd more elements) ...\n", stk->capacity - i - 5);
+                    fprintf(LogFile, "\t\t... (%d more elements) ...\n", stk->capacity - i - 5);
                     i = stk->capacity - 6;
                 }
             }
     
             fprintf(LogFile, "\t};\n");
     
-            fprintf(LogFile, "\tsize = %zd; %s\n", stk->size,
+            fprintf(LogFile, "\tsize = %d; %s\n", stk->size,
                     (stk->size >= 0 && stk->size <= stk->capacity) ? "(OK)" : "(WRONG!)");
                     
-            fprintf(LogFile, "\tcapacity = %zd; %s\n", stk->capacity,
+            fprintf(LogFile, "\tcapacity = %d; %s\n", stk->capacity,
                     (stk->capacity >= 0) ? "(OK)" : "(WRONG!)");
                     
             fprintf(LogFile, "\thash = 0x%zx; %s\n", stk->hash,
                     (StkHashFunc(stk) == stk->hash) ? "(OK)" : "(WRONG!)");
     
-            // Канарейка 2
             snprintf(str_value, sizeof(str_value), FORMAT_SPECIFIER(stk->canary_2), stk->canary_2);
             fprintf(LogFile, "\tcanary_2 = %s; %s\n", str_value,
                     (stk->canary_2 == STK_CANARY_2) ? "(OK)" : "(WRONG!)");
     
-            // Информация о создании стека
-            if (stk->id.name) {
+            if (stk->id.name)
+            {
                 fprintf(LogFile, "\n\tCreated at: %s:%d in %s()\n",
                         stk->id.file, stk->id.line, stk->id.func);
             }
     
             fprintf(LogFile, "}\n");
     
-            // Статистика
             fprintf(LogFile, "\nStack statistics:\n");
-            fprintf(LogFile, "- Fill rate: %.1f%% (%zd/%zd)\n",
+            fprintf(LogFile, "- Fill rate: %.1f%% (%d/%d)\n",
                     (stk->capacity > 0) ? (100.0 * stk->size / stk->capacity) : 0.0,
                     stk->size, stk->capacity);
             fprintf(LogFile, "- Element size: %zu bytes\n", sizeof(stackElem_T));
@@ -107,12 +101,11 @@ StackErr_t StackDump(stk_t<stackElem_T>* ON_DEBUG(stk), const char* ON_DEBUG(fil
         }
         else
         {
-            // Дамп даже при плохом указателе на данные
             fprintf(LogFile, "---------------------------------------------------------------------------------------------------------------------------\n");
             fprintf(LogFile, "DUMP stack \"%s\" [%p] from %s() at %s:%d:\n\n", 
                     stk->id.name ? stk->id.name : "UNKNOWN", stk, func, file, line);
             fprintf(LogFile, "ERROR: Bad data pointer (%p)\n", stk->data);
-            fprintf(LogFile, "size = %zd, capacity = %zd\n", stk->size, stk->capacity);
+            fprintf(LogFile, "size = %d, capacity = %d\n", stk->size, stk->capacity);
             fprintf(LogFile, "---------------------------------------------------------------------------------------------------------------------------\n");
         }
     )

@@ -3,26 +3,25 @@
 
 const WrapCmd asm_instr_set[] =
 {
-	{ReadOpcode8,    0,	 0x925,       CMD_IN},
-	{ReadOpcode8,    1,	 0x937,       CMD_JA},
-	{ReadOpcode8,    1,	 0x938,       CMD_JB},
-	{ReadOpcode8,    1,	 0x93B,       CMD_JE},
-	{ReadOpcode8,    0,	 0xFC81,      CMD_ADD},
-	{ReadOpcode8,    0,	 0x10871,      CMD_DIV},
-	{ReadOpcode8,    0,	 0x117D0,      CMD_HLT},
-	{ReadOpcode8,    1,	 0x11DEE,      CMD_JAE},
-	{ReadOpcode8,    1,	 0x11E0D,      CMD_JBE},
-	{ReadOpcode8,    1,	 0x11F6D,      CMD_JMP},
-	{ReadOpcode8,    1,	 0x11F81,      CMD_JNE},
-	{ReadOpcode16,     2,	 0x12AF4,      CMD_MOV},
-	{ReadOpcode8,    0,	 0x12BA4,      CMD_MUL},
-	{ReadOpcode8,    0,	 0x1332E,      CMD_OUT},
-	{ReadOpcode8,    1,	 0x13631,      CMD_POP},
-	{ReadOpcode8,    0,	 0x13C81,      CMD_RET},
-	{ReadOpcode8,    0,	 0x14220,      CMD_SUB},
-	{ReadOpcode8,    1,	 0x1F725E,     CMD_CALL},
-	{ReadOpcode8,    1,	 0x25A71A,     CMD_PUSH},
-	{ReadOpcode8,    0,	 0x26F520,     CMD_SQRT}
+	{CmdWithoutArg,    HASH_IN,       CMD_IN},
+	{CmdWithArg,       HASH_JA,       CMD_JA},
+	{CmdWithArg,       HASH_JB,       CMD_JB},
+	{CmdWithArg,       HASH_JE,       CMD_JE},
+	{CmdWithoutArg,    HASH_ADD,      CMD_ADD},
+	{CmdWithoutArg,    HASH_DIV,      CMD_DIV},
+	{CmdWithoutArg,    HASH_HLT,      CMD_HLT},
+	{CmdWithArg,       HASH_JAE,      CMD_JAE},
+	{CmdWithArg,       HASH_JBE,      CMD_JBE},
+	{CmdWithArg,       HASH_JMP,      CMD_JMP},
+	{CmdWithArg,       HASH_JNE,      CMD_JNE},
+	{CmdWithoutArg,    HASH_MUL,      CMD_MUL},
+	{CmdWithoutArg,    HASH_OUT,      CMD_OUT},
+	{CmdWithArg,       HASH_POP,      CMD_POP},
+	{CmdWithoutArg,    HASH_RET,      CMD_RET},
+	{CmdWithoutArg,    HASH_SUB,      CMD_SUB},
+	{CmdWithArg,       HASH_CALL,     CMD_CALL},
+	{CmdWithArg,       HASH_PUSH,     CMD_PUSH},
+	{CmdWithoutArg,    HASH_SQRT,     CMD_SQRT}
 };
 
 #define LEN_INSTR_SET sizeof(asm_instr_set) / sizeof(*asm_instr_set)

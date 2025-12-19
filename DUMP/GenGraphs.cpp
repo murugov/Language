@@ -163,7 +163,7 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
     #pragma GCC diagnostic ignored "-Wformat"
 
     if (tree->root->type == ARG_NUM)
-        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+        fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %d | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
             number_nodes, tree->root, tree->root->parent, tree->root->item, tree->root->left, tree->root->right);
     else if (tree->root->type == ARG_OP)
         fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
@@ -198,7 +198,7 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
             #pragma GCC diagnostic ignored "-Wformat"
 
             if (current_node->left->type == ARG_NUM)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %d | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
                     number_nodes, current_node->left, current_node->left->parent, current_node->left->item, current_node->left->left, current_node->left->right);
             else if (current_node->left->type == ARG_OP)
                 fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
@@ -228,7 +228,7 @@ genErr_t GenDot(FILE *src, tree_t *tree, const char *func)
             #pragma GCC diagnostic ignored "-Wformat"
 
             if (current_node->right->type == ARG_NUM)
-                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %g | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
+                fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_NUM | data = %d | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 
                     number_nodes, current_node->right, current_node->right->parent, current_node->right->item, current_node->right->left, current_node->right->right);
             else if (current_node->right->type == ARG_OP)
                 fprintf(src, "\tn%zu [shape=record, label=\"{ptr = %p | parent = %p | type = ARG_OP | data = %s | {<left> left = %p | <right> right = %p}}\", fillcolor=\"#87CEEB\", color=\"black\"]\n", 

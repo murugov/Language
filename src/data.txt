@@ -1,4 +1,12 @@
 def f(a, b, c)
 {
+    if (g == b)
+    {
+        return 9;
+    }
     a = 0;
+    return b;
 }
+
+init x = 10;
+init y = f(x, 2, 3);
