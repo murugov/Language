@@ -3,6 +3,7 @@
 static int condition_count = 0;
 static int if_count = 0;
 static int while_count = 0;
+static int local_var_offset = 0;
 
 FILE *ReportFile = NULL;
 
@@ -47,9 +48,11 @@ backErr_t transCtor(trans_t *trans, const char *src)
     HT_CTOR(global_table);
     
     StackPush(trans->name_tables, global_table);
-    trans->cur_name_table = 0;
+    CUR_NAME_TABLE_POS = 0;
     
     trans->global_offset = GLOBAL_OFFSET;
+    
+    local_var_offset = 0;
     
     fclose(SourceFile);
     return BACK_SUCCESS;
@@ -101,7 +104,8 @@ backErr_t transDtor(trans_t *trans)
     }
     
     trans->global_offset = 0;
-    trans->cur_name_table = 0;
+    CUR_NAME_TABLE_POS = 0;
+    local_var_offset = 0;
     
     return BACK_SUCCESS;
 }
@@ -117,7 +121,9 @@ static backErr_t enterScope(trans_t *trans)
     HT_CTOR(new_table);
     
     StackPush(trans->name_tables, new_table);
-    trans->cur_name_table = trans->name_tables->size - 1;
+    CUR_NAME_TABLE_POS = trans->name_tables->size - 1;
+    
+    local_var_offset = 0;
         
     return BACK_SUCCESS;
 }
@@ -159,7 +165,12 @@ static backErr_t exitScope(trans_t *trans)
 
     ht_t<ntElem_t*> *tmp = NULL;
     StackPop(trans->name_tables, &tmp);
-    trans->cur_name_table = trans->name_tables->size - 1;
+    CUR_NAME_TABLE_POS = trans->name_tables->size - 1;
+    
+    if (CUR_NAME_TABLE_POS == 0)
+    {
+        local_var_offset = 0;
+    }
         
     return BACK_SUCCESS;
 }
@@ -169,7 +180,7 @@ static ntElem_t* findVar(trans_t *trans, const char* var_name)
 {
     if (IS_BAD_PTR(trans) || IS_BAD_PTR(var_name) || IS_BAD_PTR(trans->name_tables)) { return NULL; }
         
-    for (int i = trans->cur_name_table; i >= 0; --i)
+    for (int i = CUR_NAME_TABLE_POS; i >= 0; --i)
     {
         ht_t<ntElem_t*>* table = trans->name_tables->data[i];
         if (IS_BAD_PTR(table)) continue;
@@ -238,12 +249,12 @@ backErr_t TranslateTree(trans_t *trans, const char* report)
     
     fprintf(ReportFile, "\nmain:\n\n");
     
-    fprintf(ReportFile, "push r0\n");         
+    fprintf(ReportFile, "push %s\n", FP);         
     fprintf(ReportFile, "pop [0]\n");          
-    fprintf(ReportFile, "push r0\n");          
-    fprintf(ReportFile, "pop r1\n");          
-    fprintf(ReportFile, "push r1\n");
-    fprintf(ReportFile, "pop r0\n\n");
+    fprintf(ReportFile, "push %s\n", FP);          
+    fprintf(ReportFile, "pop %s\n", TP);          
+    fprintf(ReportFile, "push %s\n", TP);
+    fprintf(ReportFile, "pop %s\n\n", FP);
     
     trans->node = original_node;
     
@@ -254,7 +265,7 @@ backErr_t TranslateTree(trans_t *trans, const char* report)
     }
     
     fprintf(ReportFile, "push [0]\n");
-    fprintf(ReportFile, "pop r0\n");
+    fprintf(ReportFile, "pop %s\n", FP);
         
     fprintf(ReportFile, "\nhlt\n");
     
@@ -738,10 +749,10 @@ backErr_t TranslateReturn(trans_t *trans)
     }
 
     fprintf(ReportFile, "\n");
-    fprintf(ReportFile, "push r0\n");
-    fprintf(ReportFile, "pop r1\n");
-    fprintf(ReportFile, "push [r1]\n");
-    fprintf(ReportFile, "pop r0\n");
+    fprintf(ReportFile, "push %s\n", FP);
+    fprintf(ReportFile, "pop %s\n", TP);
+    fprintf(ReportFile, "push [%s]\n", TP);
+    fprintf(ReportFile, "pop %s\n", FP);
     fprintf(ReportFile, "ret\n");
 
     return BACK_SUCCESS;
@@ -761,18 +772,20 @@ backErr_t TranslateFuncDef(trans_t *trans)
             const char* func_name = TR_NODE_L->item.func;
             fprintf(ReportFile, "%s:\n\n", func_name);
             
-            fprintf(ReportFile, "push r0\n");          
-            fprintf(ReportFile, "push r0\n");        
-            fprintf(ReportFile, "pop r1\n");           
-            fprintf(ReportFile, "pop [r0]\n");        
-            fprintf(ReportFile, "push r1\n");          
-            fprintf(ReportFile, "pop r0\n\n");
+            fprintf(ReportFile, "push %s\n", FP);          
+            fprintf(ReportFile, "push %s\n", FP);        
+            fprintf(ReportFile, "pop %s\n", TP);           
+            fprintf(ReportFile, "pop [%s]\n", FP);        
+            fprintf(ReportFile, "push %s\n", TP);          
+            fprintf(ReportFile, "pop %s\n\n", FP);
             
             if (enterScope(trans) != BACK_SUCCESS)
             { 
                 TR_NODE = saved_node;
                 return BACK_ERROR; 
             }
+            
+            local_var_offset = 0;
             
             int param_count = 0;
             node_t* param_list = TR_NODE_R->left;
@@ -788,7 +801,7 @@ backErr_t TranslateFuncDef(trans_t *trans)
                         
             for (int i = param_count - 1; i >= 0; i--)
             {
-                int param_offset = 2 + (param_count - 1 - i);
+                int param_offset = i + 1;
                 
                 ntElem_t* param_elem = addVar(trans, param_names[i], ARG_VAR, param_offset);
                 
@@ -801,14 +814,14 @@ backErr_t TranslateFuncDef(trans_t *trans)
                 }
                 
                 fprintf(ReportFile, "\n");
-                fprintf(ReportFile, "pop r1\n");           
-                fprintf(ReportFile, "push r0\n");          
+                fprintf(ReportFile, "pop %s\n", TP);          
+                fprintf(ReportFile, "push %s\n", FP);         
                 fprintf(ReportFile, "push %d\n", param_offset);
                 fprintf(ReportFile, "add\n");              
-                fprintf(ReportFile, "pop r0\n");           
-                fprintf(ReportFile, "push r1\n");          
-                fprintf(ReportFile, "pop [r0]\n");         
-                fprintf(ReportFile, "pop r0\n");           
+                fprintf(ReportFile, "pop %s\n", FP);   
+                fprintf(ReportFile, "push %s\n", TP);  
+                fprintf(ReportFile, "pop [%s]\n", FP); 
+                fprintf(ReportFile, "pop %s\n", FP);   
                 fprintf(ReportFile, "\n");
             }
             
@@ -831,14 +844,16 @@ backErr_t TranslateFuncDef(trans_t *trans)
             else
             {
                 fprintf(ReportFile, "\n");
-                fprintf(ReportFile, "push r0\n");
-                fprintf(ReportFile, "pop r1\n");
-                fprintf(ReportFile, "push [r1]\n");
-                fprintf(ReportFile, "pop r0\n");
-                fprintf(ReportFile, "ret\n\n");
+                fprintf(ReportFile, "push 0\n");
+                fprintf(ReportFile, "\n");
             }
             
-
+            fprintf(ReportFile, "\n");
+            fprintf(ReportFile, "push %s\n", FP);
+            fprintf(ReportFile, "pop %s\n", TP);
+            fprintf(ReportFile, "push [%s]\n", TP);
+            fprintf(ReportFile, "pop %s\n", FP);
+            fprintf(ReportFile, "ret\n\n");
             
             if (exitScope(trans) != BACK_SUCCESS)
             { 
@@ -928,18 +943,8 @@ backErr_t TranslateVarInit(trans_t *trans)
     }
     else
     {
-        if (!IS_BAD_PTR(CUR_NAME_TABLE))
-        {
-            int var_count = 0;
-            for (int i = 0; i < HT_SIZE; ++i)
-            {
-                if (CUR_NAME_TABLE->table[i].is_used && !IS_BAD_PTR(CUR_NAME_TABLE->table[i].stk))
-                {
-                    var_count += CUR_NAME_TABLE->table[i].stk->size;
-                }
-            }
-            offset = -(var_count + 1);
-        }
+        local_var_offset++;
+        offset = -local_var_offset;
     }
     
     ntElem_t* var_elem = addVar(trans, var_name, ARG_VAR, offset);
@@ -977,18 +982,8 @@ backErr_t TranslateAssignment(trans_t *trans)
         }
         else
         {
-            if (!IS_BAD_PTR(CUR_NAME_TABLE))
-            {
-                int var_count = 0;
-                for (int i = 0; i < HT_SIZE; ++i)
-                {
-                    if (CUR_NAME_TABLE->table[i].is_used && !IS_BAD_PTR(CUR_NAME_TABLE->table[i].stk))
-                    {
-                        var_count += CUR_NAME_TABLE->table[i].stk->size;
-                    }
-                }
-                offset = -(var_count + 1);
-            }
+            local_var_offset++;
+            offset = -local_var_offset;
         }
         
         var_elem = addVar(trans, var_name, ARG_VAR, offset);
@@ -1003,11 +998,11 @@ backErr_t TranslateAssignment(trans_t *trans)
         {
             fprintf(ReportFile, "\n");
             fprintf(ReportFile, "push 0\n");
-            fprintf(ReportFile, "push r0\n");
+            fprintf(ReportFile, "push %s\n", FP);
             fprintf(ReportFile, "push %d\n", offset);
             fprintf(ReportFile, "add\n");
-            fprintf(ReportFile, "pop r1\n");
-            fprintf(ReportFile, "pop [r1]\n\n");
+            fprintf(ReportFile, "pop %s\n", TP);
+            fprintf(ReportFile, "pop [%s]\n\n", TP);
         }
     }
 
@@ -1024,11 +1019,11 @@ backErr_t TranslateAssignment(trans_t *trans)
     else
     {
         fprintf(ReportFile, "\n");
-        fprintf(ReportFile, "push r0\n");
+        fprintf(ReportFile, "push %s\n", FP);
         fprintf(ReportFile, "push %d\n", var_elem->offset);
         fprintf(ReportFile, "add\n");
-        fprintf(ReportFile, "pop r1\n");
-        fprintf(ReportFile, "pop [r1]\n\n");
+        fprintf(ReportFile, "pop %s\n", TP);
+        fprintf(ReportFile, "pop [%s]\n\n", TP);
     }
     
     return BACK_SUCCESS;
@@ -1058,6 +1053,7 @@ backErr_t TranslateVar(trans_t *trans)
         }
         else
         {
+            printf(ANSI_COLOR_RED "Error: Undefined variable '%s'\n" ANSI_COLOR_RESET, var_name);
             return BACK_ERROR;
         }
     }
@@ -1069,11 +1065,11 @@ backErr_t TranslateVar(trans_t *trans)
     else
     {
         fprintf(ReportFile, "\n");
-        fprintf(ReportFile, "push r0\n");
+        fprintf(ReportFile, "push %s\n", FP);
         fprintf(ReportFile, "push %d\n", var_elem->offset);
         fprintf(ReportFile, "add\n");
-        fprintf(ReportFile, "pop r1\n");
-        fprintf(ReportFile, "push [r1]\n\n");
+        fprintf(ReportFile, "pop %s\n", TP);
+        fprintf(ReportFile, "push [%s]\n\n", TP);
     }
 
     return BACK_SUCCESS;

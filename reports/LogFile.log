@@ -1,40 +1,34 @@
-[2025-12-20 07:45:38] DEBUG Created id for stack "trans->name_tables"
-[2025-12-20 07:45:38] INFO  Hash updated
-[2025-12-20 07:45:38] INFO  Stack "trans->name_tables" is created
-[2025-12-20 07:45:38] DEBUG Created id for hash-table "global_table"
-[2025-12-20 07:45:38] INFO  Hash-table "global_table" created
-[2025-12-20 07:45:38] DEBUG PUSH 0x604000000c10 in "trans->name_tables"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] DEBUG Created id for hash-table "new_table"
-[2025-12-20 07:45:38] INFO  Hash-table "new_table" created
-[2025-12-20 07:45:38] DEBUG PUSH 0x604000000c50 in "trans->name_tables"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] DEBUG Created id for stack "new_stk"
-[2025-12-20 07:45:38] INFO  Hash updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is created
-[2025-12-20 07:45:38] DEBUG PUSH 0x603000001d80 in "new_stk"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] DEBUG Created id for stack "new_stk"
-[2025-12-20 07:45:38] INFO  Hash updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is created
-[2025-12-20 07:45:38] DEBUG PUSH 0x603000001db0 in "new_stk"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] DEBUG Created id for stack "new_stk"
-[2025-12-20 07:45:38] INFO  Hash updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is created
-[2025-12-20 07:45:38] DEBUG PUSH 0x603000001de0 in "new_stk"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is destroyed
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is destroyed
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is destroyed
-[2025-12-20 07:45:38] INFO  Hash-table "new_table" destroyed
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] DEBUG POP 0x604000000c50 from "trans->name_tables"
-[2025-12-20 07:45:38] DEBUG Created id for stack "new_stk"
-[2025-12-20 07:45:38] INFO  Hash updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is created
-[2025-12-20 07:45:38] DEBUG PUSH 0x603000001e10 in "new_stk"
-[2025-12-20 07:45:38] INFO  Hash is updated
-[2025-12-20 07:45:38] INFO  Stack "new_stk" is destroyed
-[2025-12-20 07:45:38] INFO  Hash-table "global_table" destroyed
-[2025-12-20 07:45:38] INFO  Stack "trans->name_tables" is destroyed
+[2025-12-20 08:43:56] DEBUG Created id for stack "trans->name_tables"
+[2025-12-20 08:43:56] INFO  Hash updated
+[2025-12-20 08:43:56] INFO  Stack "trans->name_tables" is created
+[2025-12-20 08:43:56] DEBUG Created id for hash-table "global_table"
+[2025-12-20 08:43:56] INFO  Hash-table "global_table" created
+[2025-12-20 08:43:56] DEBUG PUSH 0x604000000ad0 in "trans->name_tables"
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] DEBUG Created id for hash-table "new_table"
+[2025-12-20 08:43:56] INFO  Hash-table "new_table" created
+[2025-12-20 08:43:56] DEBUG PUSH 0x604000000b10 in "trans->name_tables"
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] DEBUG Created id for stack "new_stk"
+[2025-12-20 08:43:56] INFO  Hash updated
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is created
+[2025-12-20 08:43:56] DEBUG PUSH 0x603000001d80 in "new_stk"
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] DEBUG Created id for stack "new_stk"
+[2025-12-20 08:43:56] INFO  Hash updated
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is created
+[2025-12-20 08:43:56] DEBUG PUSH 0x603000001db0 in "new_stk"
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is destroyed
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is destroyed
+[2025-12-20 08:43:56] INFO  Hash-table "new_table" destroyed
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] DEBUG POP 0x604000000b10 from "trans->name_tables"
+[2025-12-20 08:43:56] DEBUG Created id for stack "new_stk"
+[2025-12-20 08:43:56] INFO  Hash updated
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is created
+[2025-12-20 08:43:56] DEBUG PUSH 0x603000001de0 in "new_stk"
+[2025-12-20 08:43:56] INFO  Hash is updated
+[2025-12-20 08:43:56] INFO  Stack "new_stk" is destroyed
+[2025-12-20 08:43:56] INFO  Hash-table "global_table" destroyed
+[2025-12-20 08:43:56] INFO  Stack "trans->name_tables" is destroyed

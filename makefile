@@ -10,24 +10,14 @@ DUMP_INCLUDES		= -I./DUMP/headers
 FRONT_INCLUDES		= -I./FRONTEND/headers
 MIDLE_INCLUDES		= -I./MIDLEEND/headers
 BACK_INCLUDES		= -I./BACKEND/headers
-WOLFRAM_INCLUDES    = -I./WOLFRAM_SIGMA/headers
-ASM_INCLUDES  		= -I./ASSEMBLER/headers
-# SPU_INCLUDES  		= -I./SPU/headers
+
 
 COMMON_FILES  = COMMON/GetHash.cpp COMMON/IsBadPtr.cpp COMMON/LineCounter.cpp COMMON/logger.cpp COMMON/SizeFile.cpp COMMON/TXTreader.cpp COMMON/math_func.cpp COMMON/is_zero.cpp COMMON/Factorial.cpp
 TREE_FILES 	  = TREE/TreeFunc.cpp
 DUMP_FILES	  = DUMP/GenGraphs.cpp 
 FRONT_FILES	  = FRONTEND/lexer.cpp FRONTEND/token.cpp FRONTEND/parser.cpp FRONTEND/PrintAST.cpp
 BACK_FILES	  = BACKEND/DataReader.cpp BACKEND/translator.cpp
-WOLFRAM_FILES = WOLFRAM_SIGMA/VerifyInstrSet.cpp WOLFRAM_SIGMA/WolfFunc.cpp WOLFRAM_SIGMA/CalcFunc.cpp WOLFRAM_SIGMA/SimplifyTree.cpp WOLFRAM_SIGMA/CalcExpression.cpp WOLFRAM_SIGMA/parseWolfTree.cpp
-ASM_FILES 	  = ASSEMBLER/ArrPtrFunc.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmCmdWrt.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeCtor.cpp ASSEMBLER/FirstCompilation.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/SecondCompilation.cpp
-# SPU_FILES 	  = SPU/CalcFunc.cpp SPU/spuCtor.cpp SPU/spuErrPrint.cpp SPU/spuExecutor.cpp SPU/SpuVerifySort.cpp SPU/SpuArgParser.cpp
 
-DEFAULT_SRC   ?=  src/data.txt
-DEFAULT_LATEX ?=  reports/LatexDump.tex
-
-DEFAULT_INPUT  ?= src/CompileFiles/source.asm
-DEFAULT_OUTPUT ?= src/CompileFiles/bytecode.asm
 
 all: help
 
@@ -58,15 +48,6 @@ asm: ASSEMBLER/main_asm.cpp $(COMMON_FILES) $(ASM_FILES)
 	@echo "-----------------------------------------------------------------------------------------"
 
 
-run-wolf: wolf
-	./wolf_program $(DEFAULT_SRC) $(DEFAULT_LATEX)
-
-run-wolf-args: wolf
-	@if [ "$(ARGS)" = "" ]; then \
-		echo "Usage: make run-wolf-args ARGS=\"data.txt latex.tex\""; \
-	fi
-	./wolf_program $(ARGS)
-
 run-gen: gen
 	./gen_program
 
@@ -75,28 +56,23 @@ run-front: front
 
 run-back: back
 	./back_program
-
-run-asm: asm
-	./asm_program $(DEFAULT_INPUT) $(DEFAULT_OUTPUT)
-
-run-asm-args: asm
-	@if [ "$(ARGS)" = "" ]; then \
-		echo "Usage: make run-comp-args ARGS=\"input.asm output.asm\""; \
-	fi
-	./asm_program $(ARGS)
 	
 run: run-back
 
 clean:
-	rm -f wolf_program gen_program front_program back_program asm_program
+	rm -f wolf_program gen_program front_program
 
 help:
 	@echo "Available commands:"
 	@echo ""
-	@echo "  make wolf                     - compile a wolfram"
-	@echo "  make run-wolf                 - compile and run wolfram"
-	@echo "  make run                      - compile and run wolfram"
+	@echo "  make front                    - compile a frontend"
+	@echo "  make run-front                - compile and run frontend"
+	@echo ""
+	@echo "  make back                     - compile a backend"
+	@echo "  make run-back                 - compile and run backend"
+	@echo ""
+	@echo "  make run                      - compile and run backend"
 	@echo ""
 	@echo "  make clean                    - remove compiled programs"
 
-.PHONY: gen front back asm run-wolf run-wolf-args run-gen run-front run-back run-asm run-asm-args run clean help
+.PHONY: gen front back asm run-gen run-front run-back run clean help

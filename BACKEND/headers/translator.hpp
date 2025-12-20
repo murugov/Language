@@ -11,7 +11,8 @@
 #include "dump.hpp"
 #include "colors.hpp"
 
-#define ADR_REG "r0"
+#define FP "r0"
+#define TP "r1"
 
 #define GLOBAL_OFFSET     1000
 #define MAX_NUM_FUNC_ARGS 8

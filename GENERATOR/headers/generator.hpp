@@ -17,11 +17,6 @@
 #define PATH_TO_OP_INSTR_SET   "GENERATOR/reports/OpInstrSet.cpp"
 #define PATH_TO_KEYWORD_SET    "GENERATOR/reports/KeywordSet.cpp"
 
-#define PATH_TO_SRC_SPU_FILE   "GENERATOR/src/cmds.txt"
-#define PATH_TO_CMD_CODES_FILE "GENERATOR/reports/CmdCodesEnum.hpp"
-#define PATH_TO_ASM_INSTR_SET  "GENERATOR/reports/AsmInstrSet.cpp"
-#define PATH_TO_SPU_INSTR_SET  "GENERATOR/reports/SpuInstrSet.cpp"
-
 #define MAX_LEN_NAME_FUNC 8
 
 typedef unsigned char count_t;
@@ -57,20 +52,6 @@ struct keyword_set_t
     hash_t hash;
 };
 
-struct asm_instr_t
-{
-    count_t count;
-    hash_t  hash;
-    cmd_t   cmd;
-};
-
-struct spu_instr_t
-{
-    count_t count;
-    num_t num;
-    cmd_t cmd;
-};
-
 
 void RemoveComments(char** arr_cmd, int *count_line);
 
@@ -81,14 +62,6 @@ GenErr_t GenKeywordSet(FILE *KeywordSetFile, char **arr_ptr, int count_line);
 int CmpOpInstrSetByHash(const void *a, const void *b);
 int CmpKeywordSetByHash(const void *a, const void *b);
 int CmpByHash(const void *a, const void *b);
-
-
-GenErr_t GenCmdEnum(FILE *CmdEnumsFile, char **arr_ptr, size_t count_line);
-GenErr_t GenAsmInstrSet(FILE *AsmInstrSetFile, char **arr_ptr, size_t count_line);
-GenErr_t GenSpuInstrSet(FILE *SpuInstrSetFile, char **arr_ptr, size_t count_line);
-
-int CmpAsmInstrSetByHash(const void *a, const void *b);
-int CmpSpuInstrSetByNum(const void *a, const void *b);
 
 
 #endif
