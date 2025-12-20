@@ -6,40 +6,40 @@
 
 enum HashOp
 {
-	HASH_IF        = 0xD1D,
-	HASH_ELSE      = 0x2F8D39,
-	HASH_FOR       = 0x18CC9,
-	HASH_WHILE     = 0x6BDCB31,
-	HASH_RETURN    = 0xC84E3D30,
-	HASH_DEF       = 0x18405,
-	HASH_INIT      = 0x316510,
-	HASH_EOF       = 0x10CDC,
-	HASH_UNDEF     = 0x4D24AAC,
-	HASH_LPAREN    = 0x28,
-	HASH_RPAREN    = 0x29,
-	HASH_LBRACKET  = 0x5B,
-	HASH_RBRACKET  = 0x5D,
-	HASH_LBRACE    = 0x7B,
-	HASH_RBRACE    = 0x7D,
-	HASH_COMMA     = 0x2C,
-	HASH_SEMICOLON = 0x3B,
-	HASH_COLON     = 0x3A,
-	HASH_EQ        = 0x3D,
-	HASH_EQEQ      = 0x7A0,
-	HASH_NE        = 0x43C,
-	HASH_GT        = 0x3E,
-	HASH_LT        = 0x3C,
-	HASH_GE        = 0x7BF,
-	HASH_LE        = 0x781,
-	HASH_ADD       = 0x2B,
-	HASH_SUB       = 0x2D,
-	HASH_MUL       = 0x2A,
-	HASH_DIV       = 0x2F,
-	HASH_POW       = 0x5E,
-	HASH_SQRT      = 0x35FD20,
-	HASH_E         = 0x65,
-	HASH_LN        = 0xD82,
-	HASH_LOG       = 0x1A344,
+	HASH_IF        = 0x79D9F6B2E11B9DA8,
+	HASH_ELSE      = 0x79D9F6765AB01868,
+	HASH_FOR       = 0xBD13F1F1,
+	HASH_WHILE     = 0x24B3F1B94E29A07E,
+	HASH_RETURN    = 0x191BFAA646,
+	HASH_DEF       = 0xC8189CC0,
+	HASH_INIT      = 0x5B527A4,
+	HASH_EOF       = 0x489E1BE,
+	HASH_UNDEF     = 0x469CE49,
+	HASH_LPAREN    = 0x50A8DEEEA6C9A7F7,
+	HASH_RPAREN    = 0x50A8DEF0CC421FF5,
+	HASH_LBRACKET  = 0xE334847C79A89605,
+	HASH_RBRACKET  = 0x2708A85BD7D22629,
+	HASH_LBRACE    = 0x161B85B2D19DD42,
+	HASH_RBRACE    = 0x301BFCD580570F8E,
+	HASH_COMMA     = 0xADC075237E24D,
+	HASH_SEMICOLON = 0x24,
+	HASH_COLON     = 0x3463E0,
+	HASH_EQ        = 0xAED8FC38,
+	HASH_EQEQ      = 0x59BD41EF5776,
+	HASH_NE        = 0xA6B1E59D25FD9FB4,
+	HASH_GT        = 0x592298644DC85C89,
+	HASH_LT        = 0x29D1A05D0FDD7195,
+	HASH_GE        = 0xE7668E0AB16FED59,
+	HASH_LE        = 0xAF674A1C46D1B75F,
+	HASH_ADD       = 0x6D64BEA6A37DEC39,
+	HASH_SUB       = 0x1598794A6B04103,
+	HASH_MUL       = 0xAE5E5AC83D89AE66,
+	HASH_DIV       = 0x12D03F9528B8198,
+	HASH_POW       = 0x1924F1FC02,
+	HASH_SQRT      = 0x689B61A,
+	HASH_E         = 0x9CB4108A678DB,
+	HASH_LN        = 0x171E7D4906,
+	HASH_LOG       = 0x1A345,
 	HASH_SIN       = 0x1BCD8,
 	HASH_COS       = 0x18187,
 	HASH_TAN       = 0x1BFA1,
@@ -71,6 +71,81 @@ struct diff_context
     hash_t hash_indep_var;
 };
 
+
+double calcIF(calc_context *calc_params);
+node_t *diffIF(diff_context *diff_params);
+
+double calcELSE(calc_context *calc_params);
+node_t *diffELSE(diff_context *diff_params);
+
+double calcFOR(calc_context *calc_params);
+node_t *diffFOR(diff_context *diff_params);
+
+double calcWHILE(calc_context *calc_params);
+node_t *diffWHILE(diff_context *diff_params);
+
+double calcRETURN(calc_context *calc_params);
+node_t *diffRETURN(diff_context *diff_params);
+
+double calcDEF(calc_context *calc_params);
+node_t *diffDEF(diff_context *diff_params);
+
+double calcINIT(calc_context *calc_params);
+node_t *diffINIT(diff_context *diff_params);
+
+double calcEOF(calc_context *calc_params);
+node_t *diffEOF(diff_context *diff_params);
+
+double calcUNDEF(calc_context *calc_params);
+node_t *diffUNDEF(diff_context *diff_params);
+
+double calcLPAREN(calc_context *calc_params);
+node_t *diffLPAREN(diff_context *diff_params);
+
+double calcRPAREN(calc_context *calc_params);
+node_t *diffRPAREN(diff_context *diff_params);
+
+double calcLBRACKET(calc_context *calc_params);
+node_t *diffLBRACKET(diff_context *diff_params);
+
+double calcRBRACKET(calc_context *calc_params);
+node_t *diffRBRACKET(diff_context *diff_params);
+
+double calcLBRACE(calc_context *calc_params);
+node_t *diffLBRACE(diff_context *diff_params);
+
+double calcRBRACE(calc_context *calc_params);
+node_t *diffRBRACE(diff_context *diff_params);
+
+double calcCOMMA(calc_context *calc_params);
+node_t *diffCOMMA(diff_context *diff_params);
+
+double calcSEMICOLON(calc_context *calc_params);
+node_t *diffSEMICOLON(diff_context *diff_params);
+
+double calcCOLON(calc_context *calc_params);
+node_t *diffCOLON(diff_context *diff_params);
+
+double calcEQ(calc_context *calc_params);
+node_t *diffEQ(diff_context *diff_params);
+
+double calcEQEQ(calc_context *calc_params);
+node_t *diffEQEQ(diff_context *diff_params);
+
+double calcNE(calc_context *calc_params);
+node_t *diffNE(diff_context *diff_params);
+
+double calcGT(calc_context *calc_params);
+node_t *diffGT(diff_context *diff_params);
+
+double calcLT(calc_context *calc_params);
+node_t *diffLT(diff_context *diff_params);
+
+double calcGE(calc_context *calc_params);
+node_t *diffGE(diff_context *diff_params);
+
+double calcLE(calc_context *calc_params);
+node_t *diffLE(diff_context *diff_params);
 
 double calcADD(calc_context *calc_params);
 node_t *diffADD(diff_context *diff_params);

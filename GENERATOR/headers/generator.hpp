@@ -17,7 +17,7 @@
 #define PATH_TO_OP_INSTR_SET   "GENERATOR/reports/OpInstrSet.cpp"
 #define PATH_TO_KEYWORD_SET    "GENERATOR/reports/KeywordSet.cpp"
 
-#define MAX_LEN_NAME_FUNC 8
+#define MAX_LEN_NAME_FUNC 16
 
 typedef unsigned char count_t;
 typedef char          *cmd_t;
@@ -38,8 +38,8 @@ struct funcInfo
 
 struct op_instr_t
 {
-    char name[32];
-    char op[8];
+    char name[MAX_LEN_NAME_FUNC];
+    char op[MAX_LEN_NAME_FUNC];
     hash_t hash;
     int num_args; 
 };

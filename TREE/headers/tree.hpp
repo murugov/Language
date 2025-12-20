@@ -114,11 +114,13 @@ struct tree_t
 
 struct keyword_t
 {
-    // const char* my_name;
-    type_t      type;
     const char* name;
     int         len;
     hash_t      hash;
+    // type_t      type;
+    const char* c_name;
+    int         c_len;
+    hash_t      c_hash;
 };
 
 TreeErr_t TreeInit(tree_t *tree, const char *name, const char *file, const char *func, size_t line);

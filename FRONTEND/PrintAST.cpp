@@ -25,7 +25,7 @@ void PrintAST(node_t* node, FILE* stream)
         case ARG_OP:
             fprintf (stream, "OP: ");
             keyword = (keyword_t*)bsearch(&(node->item.op), keyword_set, LEN_KEYWORD_SET, sizeof(keyword_t), CmpHashForBinSearch);
-            fprintf (stream, "\"%s\" ", keyword->name);
+            fprintf (stream, "\"%s\" ", keyword->c_name);
             break;
         
         case ARG_VAR:

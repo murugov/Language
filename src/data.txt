@@ -1,6 +1,7 @@
-def f(a, b)
-{
-    return a + b;
-}
+razvod slot_mashina stavka_otkrita stavka_1 stavka_zakrita
+vhod_v_igru
+    vivesti 8 $
+vihod_iz_igri
 
-init res = f(1, 2);
+dodep stavka chetko 10$
+dodep freebet chetko slot_mashina stavka_otkrita 7 stavka_zakrita $

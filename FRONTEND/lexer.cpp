@@ -48,7 +48,7 @@ frontErr_t LexerCtor(lexer_t *lexer, char **lines, int line_count, const char *f
     PeekToken(lexer);
     while (!IS_BAD_PTR(lexer->peeked_token) && (lexer->peeked_token->type != ARG_OP || lexer->peeked_token->hash != HASH_EOF))
     {
-        // printf("cur_type: [%d];   cur_hash: [%zu];   cur_pos: [%c];   cur_line = [%d];   cur_col = [%d];\n", lexer->peeked_token->type, lexer->peeked_token->hash, *lexer->peeked_token->start, lexer->cur_line, lexer->cur_col);
+        // printf("cur_type: [%d];   cur_pos: [%c];    cur_hash: [%zu];    cur_line = [%d];   cur_col = [%d];\n", lexer->peeked_token->type, *lexer->peeked_token->start, lexer->peeked_token->hash, lexer->cur_line, lexer->cur_col);
         if (AdvanceToken(lexer) == FRONT_ERROR) return FRONT_ERROR;
         
         PeekToken(lexer);
@@ -175,7 +175,9 @@ token_t *NextToken(lexer_t* lexer)
     if (key != NULL)
     {
         if (strncmp(lexer->cur_pos, key->name, (size_t)(key->len)) == 0)
+        {
             return NewToken(ARG_OP, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
+        }
     }
 
     id_hash = (hash_t)(*lexer->cur_pos);

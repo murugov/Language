@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include "IsBadPtr.hpp"
 
-#define MAX_LEN_STR_FOR_HASH 16              // to avoid overflow
+#define MAX_LEN_STR_FOR_HASH 32              // to avoid overflow
 
 hash_t GetHash(const char *ptr);
 

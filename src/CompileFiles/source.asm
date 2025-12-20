@@ -1,22 +1,12 @@
 jmp main
 
-f:
+slot_mashina:
 
 push r0
 push r0
 pop r1
 pop [r0]
 push r1
-pop r0
-
-
-pop r1
-push r0
-push 2
-add
-pop r0
-push r1
-pop [r0]
 pop r0
 
 
@@ -29,21 +19,7 @@ push r1
 pop [r0]
 pop r0
 
-
-push r0
-push 2
-add
-pop r1
-push [r1]
-
-
-push r0
-push 1
-add
-pop r1
-push [r1]
-
-add
+push 8
 
 push r0
 pop r1
@@ -67,10 +43,11 @@ pop r1
 push r1
 pop r0
 
-push 1
-push 2
-call f
+push 10
 pop [1000]
+push 7
+call slot_mashina
+pop [1001]
 push [0]
 pop r0
 

@@ -10,7 +10,7 @@ EOF:    "EOF", "PIZDA";
 UNDEF:  "UNDEF", "NAHUI";
 # brackets and separators
 LPAREN:    "(", "stavka_otkrita";
-RPAREN:    ")", "stavka_zacrita";
+RPAREN:    ")", "stavka_zakrita";
 LBRACKET:  "[", "nachalo_udachi";
 RBRACKET:  "]", "konec_udachi";
 LBRACE:    "{", "vhod_v_igru";
