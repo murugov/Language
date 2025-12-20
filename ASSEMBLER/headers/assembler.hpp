@@ -33,7 +33,7 @@ struct sign_t
 
 #include "CmdCodesEnum.hpp"
 
-enum AsmErr_t
+enum amErr_t
 {
     ASM_SUCCESS              = 0x00,
     ASM_ERROR                = 0x01,
@@ -81,15 +81,15 @@ struct asm_context
     size_t   count_labels;
 };
 
-AsmErr_t CmdWithArg(asm_context *write_params);
-AsmErr_t CmdWithoutArg(asm_context *write_params);
-typedef AsmErr_t (*func_t)(asm_context *write_params);
+amErr_t CmdWithArg(asm_context *write_params);
+amErr_t CmdWithoutArg(asm_context *write_params);
+typedef amErr_t (*func_t)(asm_context *write_params);
 
-AsmErr_t ArgIsConstNum(asm_context *write_params);
-AsmErr_t ArgIsReg(asm_context *write_params);
-AsmErr_t ArgIsMem(asm_context *write_params);
-AsmErr_t ArgIsLabel(asm_context *write_params);
-AsmErr_t LabelSearch(hash_t hash_label, label_t *arr_labels, size_t count_labels, ssize_t *index);
+amErr_t ArgIsConstNum(asm_context *write_params);
+amErr_t ArgIsReg(asm_context *write_params);
+amErr_t ArgIsMem(asm_context *write_params);
+amErr_t ArgIsLabel(asm_context *write_params);
+amErr_t LabelSearch(hash_t hash_label, label_t *arr_labels, size_t count_labels, ssize_t *index);
 
 
 struct WrapCmd
@@ -100,21 +100,21 @@ struct WrapCmd
 };
 
 
-AsmErr_t VerifyAsmInstrSetSort();
+amErr_t VerifyAsmInstrSetSort();
 hash_t HashCmd(const char *buffer);
 char** ArrPtrCtor(FILE *SourceFile, char* buffer, int *count_line);
 void RemoveComments(char** arr_cmd, int *count_line);
-AsmErr_t CodeCtor(FILE *ByteCode, char **arr_ptr, int count_cmd);
+amErr_t CodeCtor(FILE *ByteCode, char **arr_ptr, int count_cmd);
 
-AsmErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc);
-AsmErr_t AddLabel(char *label, label_t *arr_labels, size_t *count_labels);
+amErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc);
+amErr_t AddLabel(char *label, label_t *arr_labels, size_t *count_labels);
 int CmpByHash(const void *a, const void *b);
 
-AsmErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc);
-AsmErr_t HashSearch(hash_t hash_func, ssize_t *index);
+amErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc);
+amErr_t HashSearch(hash_t hash_func, ssize_t *index);
 int CmpForBinSearch(const void *a, const void *b);
 
-void AsmErrPrint(char *SourceFile, char *ByteCode, AsmErr_t verd);
+void AsmErrPrint(char *SourceFile, char *ByteCode, amErr_t verd);
 void AsmDtor(char *buffer, char **arr_ptr);
 
 #define IS_BAD_PTR(ptr) IsBadPtr((void*)ptr)

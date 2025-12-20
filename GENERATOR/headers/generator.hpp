@@ -51,8 +51,9 @@ struct op_instr_t
 
 struct keyword_set_t
 {
-    char name[32];
-    char key[8];
+    char name[MAX_LEN_NAME_FUNC];
+    char key_1[MAX_LEN_NAME_FUNC];
+    char key_2[MAX_LEN_NAME_FUNC];
     hash_t hash;
 };
 

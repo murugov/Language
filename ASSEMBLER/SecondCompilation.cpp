@@ -2,7 +2,7 @@
 #include "AsmInstrSet.cpp"
 
 
-AsmErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc)
+amErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(code))
@@ -28,14 +28,14 @@ AsmErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label
         hash_t hash_func = HashCmd(arr_cmd[line]);
 
         ssize_t index = 0;
-        AsmErr_t search_verd = HashSearch(hash_func, &index);
+        amErr_t search_verd = HashSearch(hash_func, &index);
 
         if(search_verd != ASM_SUCCESS)
             return search_verd;
 
         write_params.ptr = arr_cmd[line];
         write_params.cmd = asm_instr_set[index].cmd;
-        AsmErr_t write_verd = (asm_instr_set[index].func)(&write_params);
+        amErr_t write_verd = (asm_instr_set[index].func)(&write_params);
 
         if (write_verd != ASM_SUCCESS)
             return write_verd;
@@ -50,7 +50,7 @@ AsmErr_t SecondCompilation(byte_t *code, char **arr_cmd, size_t count_cmd, label
 }
 
 
-AsmErr_t HashSearch(hash_t hash_func, ssize_t *index)
+amErr_t HashSearch(hash_t hash_func, ssize_t *index)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(index))

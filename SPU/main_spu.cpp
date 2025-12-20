@@ -1,7 +1,4 @@
-#include "spu.h"
-#include "colors.h"
-
-FILE *LogFile = fopen(LOG_FILE, "wb");
+#include "spu.hpp"
 
 
 int main()
@@ -14,7 +11,7 @@ int main()
         return 1;
     }
 
-    if (VerifySpuInstrSetSort() != SUCCESS)
+    if (VerifySpuInstrSetSort() != SPU_SUCCESS)
     {
         printf(ANSI_COLOR_RED "Not sorted asm_instr_set!\n" ANSI_COLOR_RESET);
         printf(ANSI_COLOR_RED "TODO: generation SpuInstrSet.cpp with using \"make run-gen\"!\n" ANSI_COLOR_RESET);

@@ -1,7 +1,7 @@
 #include "assembler.hpp"
 
 
-AsmErr_t ArgIsConstNum(asm_context *write_params)
+amErr_t ArgIsConstNum(asm_context *write_params)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(write_params))
@@ -27,7 +27,7 @@ AsmErr_t ArgIsConstNum(asm_context *write_params)
 }
 
 
-AsmErr_t ArgIsReg(asm_context *write_params)
+amErr_t ArgIsReg(asm_context *write_params)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(write_params))
@@ -58,7 +58,7 @@ AsmErr_t ArgIsReg(asm_context *write_params)
 }
 
 
-AsmErr_t ArgIsMem(asm_context *write_params)
+amErr_t ArgIsMem(asm_context *write_params)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(write_params))
@@ -69,11 +69,11 @@ AsmErr_t ArgIsMem(asm_context *write_params)
 
     if (sscanf(write_params->ptr, "%*s [%s] ", label) == 1)
     {
-        AsmErr_t arg_is_const_num_verd = ArgIsConstNum(write_params);
+        amErr_t arg_is_const_num_verd = ArgIsConstNum(write_params);
         if (arg_is_const_num_verd != ASM_ERROR)
             return arg_is_const_num_verd;
 
-        AsmErr_t arg_is_reg_verd = ArgIsReg(write_params);
+        amErr_t arg_is_reg_verd = ArgIsReg(write_params);
         if (arg_is_reg_verd != ASM_ERROR)
             return arg_is_reg_verd;
 
@@ -84,7 +84,7 @@ AsmErr_t ArgIsMem(asm_context *write_params)
 }
 
 
-AsmErr_t ArgIsLabel(asm_context *write_params)
+amErr_t ArgIsLabel(asm_context *write_params)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(write_params))
@@ -99,7 +99,7 @@ AsmErr_t ArgIsLabel(asm_context *write_params)
         hash_t hash_label = HashCmd(label) * 31 + ':';       // very bad, may be define
 
         ssize_t index = 0;
-        AsmErr_t search_verd = LabelSearch(hash_label, write_params->arr_labels, write_params->count_labels, &index);
+        amErr_t search_verd = LabelSearch(hash_label, write_params->arr_labels, write_params->count_labels, &index);
 
         if(search_verd != ASM_SUCCESS)
             return search_verd;
@@ -116,7 +116,7 @@ AsmErr_t ArgIsLabel(asm_context *write_params)
 }
 
 
-AsmErr_t LabelSearch(hash_t hash_label, label_t *arr_labels, size_t count_labels, ssize_t *index)
+amErr_t LabelSearch(hash_t hash_label, label_t *arr_labels, size_t count_labels, ssize_t *index)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(index))

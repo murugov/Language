@@ -3,7 +3,7 @@
 
 byte_t hash_table[HASH_TABEL_SIZE] = {0};
 
-AsmErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc)
+amErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels, size_t *count_labels, size_t *pc)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(arr_cmd))
@@ -27,7 +27,7 @@ AsmErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels,
             if (strlen(arr_cmd[line]) >= MAX_LEN_CMD + MAX_LEN_LABEL)
                 return ASM_LINE_SIZE_EXCEED;
 
-            AsmErr_t add_label_verd = AddLabel(arr_cmd[line], arr_labels, count_labels);
+            amErr_t add_label_verd = AddLabel(arr_cmd[line], arr_labels, count_labels);
             if (add_label_verd != ASM_SUCCESS)
                 return add_label_verd;
 
@@ -60,7 +60,7 @@ AsmErr_t FirstCompilation(char **arr_cmd, size_t count_cmd, label_t *arr_labels,
 }
 
 
-AsmErr_t AddLabel(char *label, label_t *arr_labels, size_t *count_labels)
+amErr_t AddLabel(char *label, label_t *arr_labels, size_t *count_labels)
 {
     ON_DEBUG(
             if (IS_BAD_PTR(label))

@@ -1,41 +1,41 @@
-#ifndef SPU_H
-#define SPU_H
+#ifndef SPU_HPP
+#define SPU_HPP
+
+#include "CONFIG.hpp"
 
 #include <math.h>
-#include "stack.h"
-
-#define BYTE_CODE "./CompileFiles/bytecode.asm"
-#define LOG_FILE "./ReportFiles/LogFile.log"
+#include "stack.hpp"
+#include "colors.hpp"
 
 #define SIGNATURE "AM"
 #define VERSION   5
 
-#include "CmdCodesEnums.h"
+#include "CmdCodesEnum.hpp"
 
 enum spuErr_t
 {
-    SUCCESS             = 0x00,
-    ERROR               = 0x01,
-    BAD_INPUT_FILE_PTR  = 0x02,
-    BAD_OUTPUT_FILE_PTR = 0x03,
-    BAD_SPU_PTR         = 0x04,
-    BAD_SPU_CODE_PTR    = 0x05,
-    BAD_SPU_REGS_PTR    = 0x06,
-    BAD_SPU_RAM_PTR     = 0x07,
-    BAD_ARR_PTR         = 0x08,
-    BAD_ARR_CMD_PC_PTR  = 0x09,
-    SPU_DTOR_FAIL       = 0x0A,
-    WRONG_FILE_SIZE     = 0x0B,
-    WRONG_STK           = 0x0C,
-    WRONG_SIGN          = 0x0D,
-    WRONG_VERS          = 0x0E,
-    UNKNOWN_CMD         = 0x0F,
-    DIV_BY_ZERO         = 0x10,
-    SQRT_NEG            = 0x11,
-    ARG_NEX             = 0x12,
-    MEM_NEX             = 0x13,
-    STOP_BY_HLT         = 0x14,
-    ERROR_STK           = 0x15
+    SPU_SUCCESS             = 0x00,
+    SPU_ERROR               = 0x01,
+    SPU_BAD_INPUT_FILE_PTR  = 0x02,
+    SPU_BAD_OUTPUT_FILE_PTR = 0x03,
+    SPU_BAD_SPU_PTR         = 0x04,
+    SPU_BAD_SPU_CODE_PTR    = 0x05,
+    SPU_BAD_SPU_REGS_PTR    = 0x06,
+    SPU_BAD_SPU_RAM_PTR     = 0x07,
+    SPU_BAD_ARR_PTR         = 0x08,
+    SPU_BAD_ARR_CMD_PC_PTR  = 0x09,
+    SPU_SPU_DTOR_FAIL       = 0x0A,
+    SPU_WRONG_FILE_SIZE     = 0x0B,
+    SPU_WRONG_STK           = 0x0C,
+    SPU_WRONG_SIGN          = 0x0D,
+    SPU_WRONG_VERS          = 0x0E,
+    SPU_UNKNOWN_CMD         = 0x0F,
+    SPU_DIV_BY_ZERO         = 0x10,
+    SPU_SQRT_NEG            = 0x11,
+    SPU_ARG_NEX             = 0x12,
+    SPU_MEM_NEX             = 0x13,
+    SPU_STOP_BY_HLT         = 0x14,
+    SPU_ERROR_STK           = 0x15
 };
 
 
@@ -49,21 +49,19 @@ enum operands_t
 };
 
 typedef int           arg_t;
-typedef size_t        hash_t;
 typedef unsigned char byte_t;
 
-#define START_STK_CAP 16
 #define NUM_REG       16
-#define NUM_RAM       128
+#define NUM_RAM       2048
 
 struct spu_t
 {
-    byte_t               *code;
+    byte_t*              code;
     size_t               pc;
     stk_t<arg_t>         stk;
-    arg_t                *regs;
-    stk_t<unsigned long> stk_ret;
-    arg_t                *ram;
+    arg_t*               regs;
+    stk_t<unsigned long> stk_ret;                   // unsignrd long?
+    arg_t*               ram;
 };
 
 
@@ -94,7 +92,7 @@ spuErr_t SpuArgIsReg(spu_t *spu, arg_t *val);
 spuErr_t SpuArgIsMem(spu_t *spu, arg_t *val);
 
 
-struct WrapCmd
+struct WrapCmd                                              // rename
 {
     func_t   func;
     CmdCodes cmd; 
@@ -110,18 +108,16 @@ void spuErrPrint(spuErr_t verd);
 
 #define CURRENT_BIT(spu, op) (spu->code[spu->pc] & op) == op
 
-#define STACK_PUSH_(stk, elem) \
-    do { \
-        if (StackPush(stk, elem)) \
-            return ERROR_STK;\
-    } while(0)
+// #define STACK_PUSH_(stk, elem) \
+//     do { \
+//         if (StackPush(stk, elem)) \
+//             return ERROR_STK;\
+//     } while(0)
 
-#define STACK_POP_(stk, elem) \
-    do { \
-        if (StackPop(stk, elem)) \
-            return ERROR_STK;\
-    } while(0)
-
-#include "BinSearch.hpp"
+// #define STACK_POP_(stk, elem) \
+//     do { \
+//         if (StackPop(stk, elem)) \
+//             return ERROR_STK;\
+//     } while(0)
 
 #endif

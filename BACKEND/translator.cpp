@@ -3,15 +3,6 @@
 static int condition_count = 0;
 static int if_count = 0;
 static int while_count = 0;
-static int func_count = 0;
-
-#define CMP_REG "r0"
-#define ADR_REG "r1"
-
-
-#define GLOBAL_RAM_OFFSET 0
-#define LOCAL_RAM_OFFSET 512
-#define FRAME_SIZE 64
 
 FILE *ReportFile = NULL;
 
@@ -29,7 +20,11 @@ backErr_t transCtor(trans_t *trans, const char *src)
     ON_DEBUG( if (IS_BAD_PTR(trans) || IS_BAD_PTR(src)) { return BACK_ERROR; })
 
     FILE *SourceFile = fopen(src, "r");
-    if (IS_BAD_PTR(SourceFile)) { printf(ANSI_COLOR_RED "Error: Cannot open file %s\n" ANSI_COLOR_RESET, src); return BACK_ERROR; }
+    if (IS_BAD_PTR(SourceFile))
+    { 
+        printf(ANSI_COLOR_RED "Error: Cannot open file %s\n" ANSI_COLOR_RESET, src); 
+        return BACK_ERROR; 
+    }
 
     char *buffer = DataReader(SourceFile);
     trans->node = NodeReader(&buffer, NULL);
@@ -54,6 +49,8 @@ backErr_t transCtor(trans_t *trans, const char *src)
     StackPush(trans->name_tables, global_table);
     trans->cur_name_table = 0;
     
+    trans->global_offset = GLOBAL_OFFSET;
+    
     fclose(SourceFile);
     return BACK_SUCCESS;
 }
@@ -71,8 +68,30 @@ backErr_t transDtor(trans_t *trans)
         {
             if (trans->name_tables->data[i])
             {
-                HT_DTOR(trans->name_tables->data[i]);
-                free(trans->name_tables->data[i]);
+                ht_t<ntElem_t*>* table = trans->name_tables->data[i];
+                
+                for (int j = 0; j < HT_SIZE; ++j)
+                {
+                    if (table->table[j].is_used && !IS_BAD_PTR(table->table[j].stk))
+                    {
+                        stk_t<ntElem_t*>* current_stack = table->table[j].stk;
+                        if (!IS_BAD_PTR(current_stack) && !IS_BAD_PTR(current_stack->data))
+                        {
+                            for (ssize_t k = 0; k < current_stack->size; ++k)
+                            {
+                                ntElem_t* elem = current_stack->data[k];
+                                if (!IS_BAD_PTR(elem))
+                                {
+                                    free((void*)elem->name);
+                                    free(elem);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                HT_DTOR(table);                
+                free(table);
             }
         }
         
@@ -80,7 +99,10 @@ backErr_t transDtor(trans_t *trans)
         free(trans->name_tables);
         trans->name_tables = NULL;
     }
-
+    
+    trans->global_offset = 0;
+    trans->cur_name_table = 0;
+    
     return BACK_SUCCESS;
 }
 
@@ -96,21 +118,49 @@ static backErr_t enterScope(trans_t *trans)
     
     StackPush(trans->name_tables, new_table);
     trans->cur_name_table = trans->name_tables->size - 1;
-    
+        
     return BACK_SUCCESS;
 }
+
 
 static backErr_t exitScope(trans_t *trans)
 {
     if (IS_BAD_PTR(trans) || IS_BAD_PTR(trans->name_tables) || trans->name_tables->size <= 1) { return BACK_ERROR; }
-    
-    ht_t<ntElem_t*>* cur_table = trans->name_tables->data[trans->cur_name_table];
-    if (!IS_BAD_PTR(cur_table)) { HT_DTOR(cur_table); free(cur_table); }
-    
-    ht_t<ntElem_t*> *tmp = {};
+        
+    if (!IS_BAD_PTR(CUR_NAME_TABLE)) 
+    { 
+        for (int i = 0; i < HT_SIZE; ++i)
+        {
+            if (CUR_NAME_TABLE->table[i].is_used && !IS_BAD_PTR(CUR_NAME_TABLE->table[i].stk))
+            {
+                stk_t<ntElem_t*>* current_stack = CUR_NAME_TABLE->table[i].stk;
+                if (!IS_BAD_PTR(current_stack) && !IS_BAD_PTR(current_stack->data))
+                {
+                    for (ssize_t j = 0; j < current_stack->size; ++j)
+                    {
+                        ntElem_t* elem = current_stack->data[j];
+                        if (!IS_BAD_PTR(elem))
+                        {
+                            if (!IS_BAD_PTR(elem->name))
+                            {
+                                free((void*)elem->name);
+                                elem->name = NULL;
+                            }
+                            free(elem);
+                        }
+                    }
+                }
+            }
+        }
+        
+        HT_DTOR(CUR_NAME_TABLE); 
+        free(CUR_NAME_TABLE); 
+    }
+
+    ht_t<ntElem_t*> *tmp = NULL;
     StackPop(trans->name_tables, &tmp);
     trans->cur_name_table = trans->name_tables->size - 1;
-    
+        
     return BACK_SUCCESS;
 }
 
@@ -118,20 +168,15 @@ static backErr_t exitScope(trans_t *trans)
 static ntElem_t* findVar(trans_t *trans, const char* var_name)
 {
     if (IS_BAD_PTR(trans) || IS_BAD_PTR(var_name) || IS_BAD_PTR(trans->name_tables)) { return NULL; }
-    
+        
     for (int i = trans->cur_name_table; i >= 0; --i)
     {
         ht_t<ntElem_t*>* table = trans->name_tables->data[i];
         if (IS_BAD_PTR(table)) continue;
         
-        ntElem_t *search_elem = {};
-
-        search_elem->name            = var_name;
-        search_elem->type            = ARG_VAR;
-        search_elem->offset          = 0;
-        search_elem->size_of_stk_frm = 0;
-
-        ntElem_t* found = htFind(table, &search_elem, ntElemToStr);
+        ntElem_t search_elem = {var_name, ARG_VAR, 0, 0};
+        ntElem_t *search_elem_ptr = &search_elem;
+        ntElem_t* found = htFind(table, &search_elem_ptr, ntElemToStr);
         
         if (!IS_BAD_PTR(found)) { return found; }
     }
@@ -142,19 +187,14 @@ static ntElem_t* findVar(trans_t *trans, const char* var_name)
 
 static ntElem_t* addVar(trans_t *trans, const char* var_name, int type, int offset)
 {
-    if (IS_BAD_PTR(trans) || IS_BAD_PTR(var_name) || IS_BAD_PTR(trans->name_tables) || trans->name_tables->size == 0) { return NULL; }
+    if (IS_BAD_PTR(trans) || IS_BAD_PTR(var_name) || IS_BAD_PTR(trans->name_tables) ||
+        trans->name_tables->size == 0) { return NULL; }
     
-    ht_t<ntElem_t*>* cur_table = trans->name_tables->data[trans->cur_name_table];
-    if (IS_BAD_PTR(cur_table)) { return NULL; }
-    
-    ntElem_t *search_elem = {};
+    if (IS_BAD_PTR(CUR_NAME_TABLE)) { return NULL; }
 
-    search_elem->name            = var_name;
-    search_elem->type            = ARG_VAR;
-    search_elem->offset          = 0;
-    search_elem->size_of_stk_frm = 0;
-
-    if (!IS_BAD_PTR(htFind(cur_table, &search_elem, ntElemToStr))) { return NULL; }
+    ntElem_t search_elem = {var_name, (type_t)type, 0, 0};
+    ntElem_t *search_elem_ptr = &search_elem;
+    if (!IS_BAD_PTR(htFind(CUR_NAME_TABLE, &search_elem_ptr, ntElemToStr))) { return NULL; }
     
     ntElem_t* new_var = (ntElem_t*)calloc(1, sizeof(ntElem_t));
     if (IS_BAD_PTR(new_var)) { return NULL; }
@@ -162,9 +202,9 @@ static ntElem_t* addVar(trans_t *trans, const char* var_name, int type, int offs
     new_var->name = strdup(var_name);
     new_var->type = (type_t)type;
     new_var->offset = offset;
-    new_var->size_of_stk_frm = 1;               // or zero
+    new_var->size_of_stk_frm = 1;
     
-    if (htInsert(cur_table, &new_var, ntElemToStr) != HT_SUCCESS)
+    if (htInsert(CUR_NAME_TABLE, &new_var, ntElemToStr) != HT_SUCCESS)
     {
         free((void*)new_var->name);
         free(new_var);
@@ -188,60 +228,80 @@ backErr_t TranslateTree(trans_t *trans, const char* report)
 
     fprintf(ReportFile, "jmp main\n\n");
     
-    fprintf(ReportFile, "\n; ============== FUNCTIONS ==============\n");
+    node_t* original_node = trans->node;
+    
     if (CompileOnlyFunc(trans) != BACK_SUCCESS)
     { 
         fclose(ReportFile);
-        ReportFile = NULL;
-        return BACK_SUCCESS; 
-    }
-    
-
-    fprintf(ReportFile, "\n\n; ============== MAIN ==============\n");
-    fprintf(ReportFile, "main:\n");
-    
-    if (CompileNotFunc (trans) != BACK_SUCCESS)
-    { 
-        fclose(ReportFile);
-        ReportFile = NULL;
         return BACK_ERROR; 
     }
     
-    fprintf(ReportFile, "\n; ============== END ==============\n");
+    fprintf(ReportFile, "\nmain:\n\n");
+    
+    fprintf(ReportFile, "push r0\n");         
+    fprintf(ReportFile, "pop [0]\n");          
+    fprintf(ReportFile, "push r0\n");          
+    fprintf(ReportFile, "pop r1\n");          
+    fprintf(ReportFile, "push r1\n");
+    fprintf(ReportFile, "pop r0\n\n");
+    
+    trans->node = original_node;
+    
+    if (FindAndCompileInits(trans) != BACK_SUCCESS)
+    { 
+        fclose(ReportFile);
+        return BACK_ERROR; 
+    }
+    
+    fprintf(ReportFile, "push [0]\n");
+    fprintf(ReportFile, "pop r0\n");
+        
     fprintf(ReportFile, "\nhlt\n");
     
     fclose(ReportFile);
     ReportFile = NULL;
-    
+        
     return BACK_SUCCESS;
 }
 
 
 backErr_t CompileOnlyFunc(trans_t *trans)
 {
-    if (IS_BAD_PTR(TR_NODE)) return BACK_SUCCESS;
-    
-    if (TR_NODE_TYPE == ARG_FUNC) { return TranslateFunc(trans); }
+    if (IS_BAD_PTR(TR_NODE)) { return BACK_SUCCESS; }
+        
+    if (TR_NODE_TYPE == ARG_OP && TR_NODE_HASH == HASH_DEF)
+    {
+        return TranslateFuncDef(trans);
+    }
     
     if (TR_NODE_TYPE == ARG_LINK)
     {        
         node_t *saved_node = TR_NODE;
+        backErr_t compile_verd = BACK_SUCCESS;
+        
         if (!IS_BAD_PTR(TR_NODE_L))
         {
             TR_NODE = TR_NODE_L;
-            backErr_t compile_error = CompileOnlyFunc(trans);
-            if (compile_error != BACK_SUCCESS) { return compile_error; }
+            compile_verd = CompileOnlyFunc(trans);
+            if (compile_verd != BACK_SUCCESS) 
+            { 
+                TR_NODE = saved_node;
+                return compile_verd; 
+            }
         }
         
         if (!IS_BAD_PTR(TR_NODE_R))
         {
             TR_NODE = TR_NODE_R;
-            backErr_t compile_error = CompileOnlyFunc(trans);
-            if (compile_error != BACK_SUCCESS) { return compile_error; }
+            compile_verd = CompileOnlyFunc(trans);
+            if (compile_verd != BACK_SUCCESS) 
+            { 
+                TR_NODE = saved_node;
+                return compile_verd; 
+            }
         }
 
         TR_NODE = saved_node;
-        
         return BACK_SUCCESS;
     }
     
@@ -252,74 +312,129 @@ backErr_t CompileOnlyFunc(trans_t *trans)
 backErr_t CompileNotFunc(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_SUCCESS; }
-
-    if (TR_NODE_TYPE == ARG_FUNC) { return BACK_SUCCESS; }
-    
+        
+    if (TR_NODE_TYPE == ARG_OP && TR_NODE_HASH == HASH_DEF)
+    {
+        return BACK_SUCCESS;
+    }
+        
     if (TR_NODE_TYPE == ARG_LINK)
     {        
         node_t *saved_node = TR_NODE;
+        backErr_t compile_verd = BACK_SUCCESS;
+        
         if (!IS_BAD_PTR(TR_NODE_L))
         {
             TR_NODE = TR_NODE_L;
-            backErr_t compile_error = CompileNotFunc(trans);
-            if (compile_error != BACK_SUCCESS) { return compile_error; }
+            compile_verd = CompileNotFunc(trans);
+            if (compile_verd != BACK_SUCCESS) 
+            { 
+                TR_NODE = saved_node;
+                return compile_verd; 
+            }
         }
         
         if (!IS_BAD_PTR(TR_NODE_R))
         {
             TR_NODE = TR_NODE_R;
-            backErr_t compile_error = CompileNotFunc(trans);
-            if (compile_error != BACK_SUCCESS) { return compile_error; }
+            compile_verd = CompileNotFunc(trans);
+            if (compile_verd != BACK_SUCCESS) 
+            { 
+                TR_NODE = saved_node;
+                return compile_verd; 
+            }
         }
-
-        TR_NODE = saved_node;
         
-        return BACK_SUCCESS;
+        TR_NODE = saved_node;
+        return compile_verd;
     }
     
     return TranslatePrimary(trans);
 }
 
 
+backErr_t FindAndCompileInits(trans_t *trans)
+{
+    if (IS_BAD_PTR(TR_NODE)) { return BACK_SUCCESS; }
+        
+    if (TR_NODE_TYPE == ARG_OP && TR_NODE_HASH == HASH_INIT)
+    {
+        return TranslateVarInit(trans);
+    }
+    
+    if (TR_NODE_TYPE == ARG_OP && TR_NODE_HASH == HASH_DEF) 
+    { 
+        return BACK_SUCCESS; 
+    }
+    
+    backErr_t result = BACK_SUCCESS;
+    node_t* saved_node = TR_NODE;
+    
+    if (!IS_BAD_PTR(TR_NODE->left))
+    {
+        TR_NODE = TR_NODE->left;
+        result = FindAndCompileInits(trans);
+        TR_NODE = saved_node;
+        if (result != BACK_SUCCESS) return result;
+    }
+    
+    if (!IS_BAD_PTR(TR_NODE->right))
+    {
+        TR_NODE = TR_NODE->right;
+        result = FindAndCompileInits(trans);
+        TR_NODE = saved_node;
+        if (result != BACK_SUCCESS) return result;
+    }
+    
+    return BACK_SUCCESS;
+}
+
+
 backErr_t TranslatePrimary(trans_t *trans)
 {
-    if (IS_BAD_PTR(TR_NODE)) {return BACK_SUCCESS;}
+    if (IS_BAD_PTR(TR_NODE)) { return BACK_SUCCESS; }
+        
+    if (TR_NODE_TYPE == ARG_OP && TR_NODE_HASH == HASH_DEF) 
+    { 
+        return BACK_SUCCESS; 
+    }
     
     node_t *saved_node = TR_NODE;
+    backErr_t verd = BACK_SUCCESS;
+    
     switch (TR_NODE_TYPE)
     {
         case ARG_LINK:
-        {
             TR_NODE = TR_NODE_L;
-            TranslatePrimary(trans);
+            verd = TranslatePrimary(trans);
             TR_NODE = saved_node;
+            if (verd != BACK_SUCCESS) { return verd; }
+            
             TR_NODE = TR_NODE_R;
-            TranslatePrimary(trans);
+            verd = TranslatePrimary(trans);
             TR_NODE = saved_node;
+            if (verd != BACK_SUCCESS) { return verd; }
+
             return BACK_SUCCESS;
-        }
 
         case ARG_NUM:
-            fprintf (ReportFile, "push %d\n", TR_NODE_ITEM.num);
-            break;
+            fprintf (ReportFile, "push %d\n", TR_NODE_NUM);
+            return BACK_SUCCESS;
 
         case ARG_OP:
             return TranslateOp(trans);
-            break;
             
         case ARG_VAR:
             return TranslateVar(trans);
-            break;
             
         case ARG_FUNC:
             return TranslateFuncCall(trans);
-            break;
             
         default:
-            return BACK_ERROR;
+            break;
     }
 
-    return BACK_SUCCESS;
+    return BACK_ERROR;
 }
 
 
@@ -327,7 +442,13 @@ backErr_t TranslateOp(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_ERROR; }
 
+    if (TR_NODE_HASH == HASH_DEF)
+    { 
+        return BACK_SUCCESS;
+    }
+
     node_t *saved_node = TR_NODE;
+    
     switch (TR_NODE_HASH)
     {
         case HASH_ADD:
@@ -338,6 +459,9 @@ backErr_t TranslateOp(trans_t *trans)
     
         case HASH_INIT:
             return TranslateVarInit(trans);
+
+        case HASH_DEF:
+            return TranslateFuncDef(trans);
 
         case HASH_EQ:
             return TranslateAssignment(trans);
@@ -352,6 +476,9 @@ backErr_t TranslateOp(trans_t *trans)
 
         case HASH_IF: 
             return TranslateIf(trans);
+        case HASH_ELSE:
+            return BACK_SUCCESS;
+
         case HASH_WHILE:
             return TranslateWhile(trans);
         case HASH_RETURN:
@@ -359,18 +486,23 @@ backErr_t TranslateOp(trans_t *trans)
             
         case HASH_SEMICOLON:
         {
+            backErr_t verd = BACK_SUCCESS;
+
             if (!IS_BAD_PTR(TR_NODE_L))
             { 
                 TR_NODE = TR_NODE_L;
-                TranslatePrimary(trans); 
+                verd = TranslatePrimary(trans); 
+                TR_NODE = saved_node;
+                if (verd != BACK_SUCCESS) return verd;
             }
-            TR_NODE = saved_node;
+            
             if (!IS_BAD_PTR(TR_NODE_R))
             { 
                 TR_NODE = TR_NODE_R;
-                TranslatePrimary(trans); 
+                verd = TranslatePrimary(trans); 
+                TR_NODE = saved_node;
+                if (verd != BACK_SUCCESS) return verd;
             }
-            TR_NODE = saved_node;
             return BACK_SUCCESS;
         }
 
@@ -389,24 +521,31 @@ backErr_t TranslateCalc(trans_t *trans)
     node_t *saved_node = TR_NODE;
 
     TR_NODE = TR_NODE_L;
-    TranslatePrimary(trans);
+    backErr_t res = TranslatePrimary(trans);
+    if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
+    
     TR_NODE = TR_NODE_R;
-    TranslatePrimary(trans);
+    res = TranslatePrimary(trans);
+    if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
 
     switch (TR_NODE_HASH)
     {
-        case HASH_ADD: fprintf(ReportFile, "add\n");
+        case HASH_ADD: 
+            fprintf(ReportFile, "add\n");
             break;
         
-        case HASH_SUB: fprintf(ReportFile, "sub\n");
+        case HASH_SUB: 
+            fprintf(ReportFile, "sub\n");
             break;
 
-        case HASH_MUL: fprintf(ReportFile, "mul\n");
+        case HASH_MUL: 
+            fprintf(ReportFile, "mul\n");
             break;
 
-        case HASH_DIV: fprintf(ReportFile, "div\n");
+        case HASH_DIV: 
+            fprintf(ReportFile, "div\n");
             break;
 
         default:
@@ -426,54 +565,54 @@ backErr_t TranslateCondition(trans_t *trans)
     node_t *saved_node = TR_NODE;
 
     TR_NODE = TR_NODE_L;
-    TranslatePrimary(trans);
+    backErr_t res = TranslatePrimary(trans);
+    if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
+    
     TR_NODE = TR_NODE_R;
-    TranslatePrimary(trans);
+    res = TranslatePrimary(trans);
+    if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
-
-    fprintf(ReportFile, "push 0\n");
-    fprintf(ReportFile, "pop %s\n", CMP_REG);
-
+    
     switch (TR_NODE_HASH)
     {
-        case HASH_EQEQ:
-            fprintf (ReportFile, "je");
+        case HASH_EQEQ: 
+            fprintf(ReportFile, "je ");
             break;
-        case HASH_NE:
-            fprintf (ReportFile, "jne");
+        case HASH_NE:   
+            fprintf(ReportFile, "jne ");
             break;
         case HASH_GT:
-            fprintf (ReportFile, "jb");
+            fprintf(ReportFile, "jb ");
             break;
         case HASH_LT:
-            fprintf (ReportFile, "ja");
+            fprintf(ReportFile, "ja ");
             break;
         case HASH_GE:
-            fprintf (ReportFile, "jbe");
+            fprintf(ReportFile, "jbe ");
             break;
         case HASH_LE:
-            fprintf (ReportFile, "jae");
+            fprintf(ReportFile, "jae ");
             break;    
-
         default:
             return BACK_ERROR;
     }
 
-    fprintf(ReportFile,"false%d:\n", condition_count);
-
+    fprintf(ReportFile, "true%d\n", condition_count);
+    
+    fprintf(ReportFile, "push 0\n");
+    fprintf(ReportFile, "jmp endcond%d\n", condition_count);
+    
+    fprintf(ReportFile, "true%d:\n", condition_count);
     fprintf(ReportFile, "push 1\n");
-    fprintf(ReportFile, "pop %s\n", CMP_REG);
-
-    fprintf(ReportFile, "false%d:\n", condition_count);
-
-    fprintf(ReportFile, "push %s\n", CMP_REG);
+    
+    fprintf(ReportFile, "endcond%d:\n", condition_count);
 
     return BACK_SUCCESS;
 }
 
 
-backErr_t TranslateIf(trans_t * trans)
+backErr_t TranslateIf(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_ERROR; }
 
@@ -481,34 +620,70 @@ backErr_t TranslateIf(trans_t * trans)
 
     if (enterScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
 
-    if (TR_NODE_TYPE == ARG_LINK && !IS_BAD_PTR(TR_NODE_L))
+    node_t *saved_node = TR_NODE;
+
+    if (!IS_BAD_PTR(TR_NODE_L))
     {
-        node_t *saved_node = TR_NODE;
         TR_NODE = TR_NODE_L;
-        TranslateCondition(trans);
+        backErr_t res = TranslateCondition(trans);
+        if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
         TR_NODE = saved_node;
     }
 
-    fprintf (ReportFile, "push 0\n");
-    fprintf (ReportFile, "je endif%d\n", if_count);
-
-    if (TR_NODE_TYPE == ARG_LINK && !IS_BAD_PTR(TR_NODE_R))
+    int has_else = 0;
+    if (!IS_BAD_PTR(TR_NODE_R) && TR_NODE_R->type == ARG_OP && TR_NODE_R->item.op == HASH_ELSE)
     {
-        node_t *saved_node = TR_NODE;
-        TR_NODE = TR_NODE_R;
-        TranslatePrimary(trans);
-        TR_NODE = saved_node;
+        has_else = 1;
     }
 
-    fprintf (ReportFile, "endif%d:\n", if_count);
+    if (has_else)
+    {
+        fprintf(ReportFile, "push 0\n");
+        fprintf(ReportFile, "je else%d\n", if_count);
+
+        if (!IS_BAD_PTR(TR_NODE_R->left))
+        {
+            TR_NODE = TR_NODE_R->left;
+            backErr_t res = TranslatePrimary(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            TR_NODE = saved_node;
+        }
+
+        fprintf(ReportFile, "jmp endif%d\n", if_count);
+        fprintf(ReportFile, "else%d:\n", if_count);
+
+        if (!IS_BAD_PTR(TR_NODE_R->right))
+        {
+            TR_NODE = TR_NODE_R->right;
+            backErr_t res = TranslatePrimary(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            TR_NODE = saved_node;
+        }
+    }
+    else
+    {
+        fprintf(ReportFile, "push 0\n");
+        fprintf(ReportFile, "je endif%d\n", if_count);
+
+        if (!IS_BAD_PTR(TR_NODE_R))
+        {
+            TR_NODE = TR_NODE_R;
+            backErr_t res = TranslatePrimary(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            TR_NODE = saved_node;
+        }
+    }
+
+    fprintf(ReportFile, "endif%d:\n", if_count);
 
     if (exitScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
 
+    TR_NODE = saved_node;
     return BACK_SUCCESS;
 }
 
 
-backErr_t TranslateWhile (trans_t *trans)
+backErr_t TranslateWhile(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_ERROR; }
 
@@ -516,30 +691,32 @@ backErr_t TranslateWhile (trans_t *trans)
 
     if (enterScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
 
-    fprintf(ReportFile, "while_start%d:\n", while_count);
+    node_t *saved_node = TR_NODE;
+
+    fprintf(ReportFile, "while%d:\n", while_count);
     
-    if (TR_NODE_TYPE == ARG_LINK && !IS_BAD_PTR(TR_NODE_L))
+    if (TR_NODE_TYPE == ARG_OP && !IS_BAD_PTR(TR_NODE_L))
     {
-        node_t *saved_node = TR_NODE;
         TR_NODE = TR_NODE_L;
-        TranslateCondition(trans);
+        backErr_t res = TranslateCondition(trans);
+        if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
         TR_NODE = saved_node;
     }
 
-    fprintf (ReportFile, "push 0\n");
-    fprintf (ReportFile, "je endwhile%d\n", while_count);
+    fprintf(ReportFile, "push 0\n");
+    fprintf(ReportFile, "je endwhile%d\n", while_count);
 
-    if (TR_NODE_TYPE == ARG_LINK && !IS_BAD_PTR(TR_NODE_R))
+    if (TR_NODE_TYPE == ARG_OP && !IS_BAD_PTR(TR_NODE_R))
     {
-        node_t *saved_node = TR_NODE;
         TR_NODE = TR_NODE_R;
-        TranslatePrimary(trans);
+        backErr_t res = TranslatePrimary(trans);
+        if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
         TR_NODE = saved_node;
     }
     
-    fprintf(ReportFile, "jmp while_start%d\n", while_count);
+    fprintf(ReportFile, "jmp while%d\n", while_count);
 
-    fprintf (ReportFile, "endwhile%d:\n", while_count);
+    fprintf(ReportFile, "endwhile%d:\n", while_count);
 
     if (exitScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
 
@@ -551,100 +728,308 @@ backErr_t TranslateReturn(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_ERROR; }
 
-    if (TR_NODE_TYPE == ARG_LINK && !IS_BAD_PTR(TR_NODE_L))
+    if (TR_NODE_TYPE == ARG_OP && !IS_BAD_PTR(TR_NODE_L))
     {
         node_t *saved_node = TR_NODE;
         TR_NODE = TR_NODE_L;
-        TranslatePrimary(trans);
+        backErr_t verd = TranslatePrimary(trans);
         TR_NODE = saved_node;
+        if (verd != BACK_SUCCESS) return verd;
     }
 
-    fprintf (ReportFile, "ret\n");
+    fprintf(ReportFile, "\n");
+    fprintf(ReportFile, "push r0\n");
+    fprintf(ReportFile, "pop r1\n");
+    fprintf(ReportFile, "push [r1]\n");
+    fprintf(ReportFile, "pop r0\n");
+    fprintf(ReportFile, "ret\n");
 
+    return BACK_SUCCESS;
+}
+
+
+backErr_t TranslateFuncDef(trans_t *trans)
+{
+    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_OP || TR_NODE_HASH != HASH_DEF) { return BACK_ERROR; }
+    
+    node_t *saved_node = TR_NODE;
+
+    if (!IS_BAD_PTR(TR_NODE_L) && TR_NODE_L->type == ARG_FUNC)
+    {
+        if (!IS_BAD_PTR(TR_NODE_R) && TR_NODE_R->type == ARG_LINK)
+        {
+            const char* func_name = TR_NODE_L->item.func;
+            fprintf(ReportFile, "%s:\n\n", func_name);
+            
+            fprintf(ReportFile, "push r0\n");          
+            fprintf(ReportFile, "push r0\n");        
+            fprintf(ReportFile, "pop r1\n");           
+            fprintf(ReportFile, "pop [r0]\n");        
+            fprintf(ReportFile, "push r1\n");          
+            fprintf(ReportFile, "pop r0\n\n");
+            
+            if (enterScope(trans) != BACK_SUCCESS)
+            { 
+                TR_NODE = saved_node;
+                return BACK_ERROR; 
+            }
+            
+            int param_count = 0;
+            node_t* param_list = TR_NODE_R->left;
+            node_t* current_param = param_list;
+            
+            const char* param_names[MAX_NUM_FUNC_ARGS] = {0};
+            while (!IS_BAD_PTR(current_param) && current_param->type == ARG_VAR)
+            {
+                param_names[param_count] = current_param->item.var;
+                param_count++;
+                current_param = current_param->left;
+            }
+                        
+            for (int i = param_count - 1; i >= 0; i--)
+            {
+                int param_offset = 2 + (param_count - 1 - i);
+                
+                ntElem_t* param_elem = addVar(trans, param_names[i], ARG_VAR, param_offset);
+                
+                if (IS_BAD_PTR(param_elem))
+                {
+                    printf(ANSI_COLOR_RED "Error: Cannot add parameter '%s'\n" ANSI_COLOR_RESET, param_names[i]);
+                    exitScope(trans);
+                    TR_NODE = saved_node;
+                    return BACK_ERROR;
+                }
+                
+                fprintf(ReportFile, "\n");
+                fprintf(ReportFile, "pop r1\n");           
+                fprintf(ReportFile, "push r0\n");          
+                fprintf(ReportFile, "push %d\n", param_offset);
+                fprintf(ReportFile, "add\n");              
+                fprintf(ReportFile, "pop r0\n");           
+                fprintf(ReportFile, "push r1\n");          
+                fprintf(ReportFile, "pop [r0]\n");         
+                fprintf(ReportFile, "pop r0\n");           
+                fprintf(ReportFile, "\n");
+            }
+            
+            node_t* func_body = TR_NODE_R->right;
+            if (!IS_BAD_PTR(func_body))
+            {
+                node_t* saved_body_node = TR_NODE;
+                
+                TR_NODE = func_body;
+                backErr_t result = TranslatePrimary(trans);                
+                TR_NODE = saved_body_node;
+                
+                if (result != BACK_SUCCESS)
+                {
+                    exitScope(trans);
+                    TR_NODE = saved_node;
+                    return result;
+                }
+            }
+            else
+            {
+                fprintf(ReportFile, "\n");
+                fprintf(ReportFile, "push r0\n");
+                fprintf(ReportFile, "pop r1\n");
+                fprintf(ReportFile, "push [r1]\n");
+                fprintf(ReportFile, "pop r0\n");
+                fprintf(ReportFile, "ret\n\n");
+            }
+            
+
+            
+            if (exitScope(trans) != BACK_SUCCESS)
+            { 
+                TR_NODE = saved_node;
+                return BACK_ERROR; 
+            }
+            
+            TR_NODE = saved_node;
+            return BACK_SUCCESS;
+        }
+    }
+    
+    TR_NODE = saved_node;
+    return BACK_ERROR;
+}
+
+
+backErr_t TranslateFuncCall(trans_t *trans)
+{
+    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_FUNC) { return BACK_ERROR; }
+    
+    node_t *saved_node = TR_NODE;
+    const char* func_name = TR_NODE_FUNC;
+    
+    node_t* arg_nodes[MAX_NUM_FUNC_ARGS] = {0};
+    int arg_count = 0;
+    
+    if (!IS_BAD_PTR(TR_NODE_L))
+    {
+        node_t* current = TR_NODE_L;
+        
+        while (!IS_BAD_PTR(current))
+        {
+            if (current->type == ARG_OP && current->item.op == HASH_COMMA)
+            {
+                if (!IS_BAD_PTR(current->right))
+                {
+                    arg_nodes[arg_count++] = current->right;
+                }
+                current = current->left;
+            }
+            else
+            {
+                arg_nodes[arg_count++] = current;
+                break;
+            }
+        }
+    }
+
+    for (int i = arg_count - 1; i >= 0; i--)
+    {
+        if (!IS_BAD_PTR(arg_nodes[i]))
+        {
+            TR_NODE = arg_nodes[i];
+            backErr_t res = TranslatePrimary(trans);
+            if (res != BACK_SUCCESS) 
+            { 
+                TR_NODE = saved_node;
+                return res; 
+            }
+        }
+    }
+    
+    fprintf(ReportFile, "call %s\n", func_name);
+    
+    TR_NODE = saved_node;
     return BACK_SUCCESS;
 }
 
 
 backErr_t TranslateVarInit(trans_t *trans)
 {
-    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_OP) { return BACK_ERROR; }
-    if (IS_BAD_PTR(TR_NODE_L) || TR_NODE_L->type != ARG_VAR) { return BACK_ERROR; }
+    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_OP || TR_NODE_HASH != HASH_INIT) { return BACK_ERROR; }
     
-    const char* var_name = TR_NODE_L->item.var;
+    if (IS_BAD_PTR(TR_NODE_L) || TR_NODE_L->type != ARG_OP || TR_NODE_L->item.op != HASH_EQ)
+    {
+        return BACK_ERROR;
+    }
+    
+    const char* var_name = TR_NODE_L->left->item.var;
     
     int offset = 0;
-    ht_t<ntElem_t*>* cur_table = trans->name_tables->data[trans->cur_name_table];
-    if (!IS_BAD_PTR(cur_table))
+    if (CUR_NAME_TABLE_POS == 0)
     {
-        for (int i = 0; i < HT_SIZE; ++i)
+        offset = trans->global_offset;
+        trans->global_offset += 1;
+    }
+    else
+    {
+        if (!IS_BAD_PTR(CUR_NAME_TABLE))
         {
-            if (cur_table->table[i].is_used && !IS_BAD_PTR(cur_table->table[i].stk))
+            int var_count = 0;
+            for (int i = 0; i < HT_SIZE; ++i)
             {
-                offset += cur_table->table[i].stk->size;
+                if (CUR_NAME_TABLE->table[i].is_used && !IS_BAD_PTR(CUR_NAME_TABLE->table[i].stk))
+                {
+                    var_count += CUR_NAME_TABLE->table[i].stk->size;
+                }
             }
+            offset = -(var_count + 1);
         }
     }
     
     ntElem_t* var_elem = addVar(trans, var_name, ARG_VAR, offset);
-    if (IS_BAD_PTR(var_elem)) { return BACK_ERROR; }
-
-    fprintf (ReportFile, "\n; Initialization of %s at offset %d\n", var_name, offset);
+    if (IS_BAD_PTR(var_elem))
+    {
+        printf(ANSI_COLOR_RED "Error: Cannot create variable '%s'\n" ANSI_COLOR_RESET, var_name);
+        return BACK_ERROR;
+    }
     
     node_t *saved_node = TR_NODE;
-    TR_NODE = TR_NODE_R;
-    TranslatePrimary(trans);
+    
+    TR_NODE = TR_NODE_L;
+    backErr_t verd = TranslateAssignment(trans);
     TR_NODE = saved_node;
     
-    fprintf (ReportFile, "pop [%d]\n", offset);
-
-    return BACK_SUCCESS;
+    return verd;
 }
 
 
-backErr_t TranslateFunc (trans_t *trans)
+backErr_t TranslateAssignment(trans_t *trans)
 {
-    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_FUNC) { return BACK_ERROR; }
+    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_OP || TR_NODE_HASH != HASH_EQ ||
+        IS_BAD_PTR(TR_NODE_L) || TR_NODE_L->type != ARG_VAR) { return BACK_ERROR; }
 
-    if (IS_BAD_PTR(TR_NODE_L)) { return BACK_ERROR; }
+    const char* var_name = TR_NODE_L->item.var;
     
-    const char* func_name = TR_NODE_L->item.func;
-    fprintf (ReportFile, "\n; Function: %s\n", func_name);
-    fprintf (ReportFile, "%s:\n", func_name);
-    
-    if (enterScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
-    
-    if (!IS_BAD_PTR(TR_NODE_R) && TR_NODE_R->type == ARG_LINK)
+    ntElem_t* var_elem = findVar(trans, var_name);
+    if (IS_BAD_PTR(var_elem))
     {
-        node_t* param = TR_NODE_R->left;
-        int param_offset = 0;
-        
-        while (!IS_BAD_PTR(param))
+        int offset = 0;        
+        if (CUR_NAME_TABLE_POS == 0)
         {
-            if (param->type == ARG_VAR)
+            offset = trans->global_offset;
+            trans->global_offset += 1;
+        }
+        else
+        {
+            if (!IS_BAD_PTR(CUR_NAME_TABLE))
             {
-                ntElem_t* param_elem = addVar(trans, param->item.var, ARG_VAR, param_offset);
-                if (!IS_BAD_PTR(param_elem))
+                int var_count = 0;
+                for (int i = 0; i < HT_SIZE; ++i)
                 {
-                    fprintf(ReportFile, "; Parameter: %s at offset %d\n", param->item.var, param_offset);
-                    param_offset++;
+                    if (CUR_NAME_TABLE->table[i].is_used && !IS_BAD_PTR(CUR_NAME_TABLE->table[i].stk))
+                    {
+                        var_count += CUR_NAME_TABLE->table[i].stk->size;
+                    }
                 }
+                offset = -(var_count + 1);
             }
-            param = param->left;
+        }
+        
+        var_elem = addVar(trans, var_name, ARG_VAR, offset);
+        if (IS_BAD_PTR(var_elem)) { return BACK_ERROR; }
+        
+        if (CUR_NAME_TABLE_POS == 0)
+        {
+            fprintf(ReportFile, "push 0\n");
+            fprintf(ReportFile, "pop [%d]\n", offset);
+        }
+        else
+        {
+            fprintf(ReportFile, "\n");
+            fprintf(ReportFile, "push 0\n");
+            fprintf(ReportFile, "push r0\n");
+            fprintf(ReportFile, "push %d\n", offset);
+            fprintf(ReportFile, "add\n");
+            fprintf(ReportFile, "pop r1\n");
+            fprintf(ReportFile, "pop [r1]\n\n");
         }
     }
-    
-    if (!IS_BAD_PTR(TR_NODE_R) && TR_NODE_R->type == ARG_LINK && 
-        !IS_BAD_PTR(TR_NODE_R->right))
+
+    node_t *saved_node = TR_NODE;
+    TR_NODE = TR_NODE_R;
+    backErr_t res = TranslatePrimary(trans);
+    TR_NODE = saved_node;
+    if (res != BACK_SUCCESS) { return res; }
+
+    if (CUR_NAME_TABLE_POS == 0)
     {
-        node_t *saved_node = TR_NODE;
-        TR_NODE = TR_NODE_R->right;
-        TranslatePrimary(trans);
-        TR_NODE = saved_node;
+        fprintf(ReportFile, "pop [%d]\n", var_elem->offset);
     }
-    
-    if (exitScope(trans) != BACK_SUCCESS) { return BACK_ERROR; }
-    
-    fprintf (ReportFile, "ret\n\n");
+    else
+    {
+        fprintf(ReportFile, "\n");
+        fprintf(ReportFile, "push r0\n");
+        fprintf(ReportFile, "push %d\n", var_elem->offset);
+        fprintf(ReportFile, "add\n");
+        fprintf(ReportFile, "pop r1\n");
+        fprintf(ReportFile, "pop [r1]\n\n");
+    }
     
     return BACK_SUCCESS;
 }
@@ -654,84 +1039,42 @@ backErr_t TranslateVar(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_VAR) { return BACK_ERROR; }
 
-    const char* var_name = TR_NODE_ITEM.var;
+    const char* var_name = TR_NODE_VAR;
     
     ntElem_t* var_elem = findVar(trans, var_name);
     if (IS_BAD_PTR(var_elem))
     {
-        fprintf(stderr, ANSI_COLOR_RED "Error: Undefined variable '%s'\n" ANSI_COLOR_RESET, var_name);
-        return BACK_ERROR;
-    }
-
-    fprintf (ReportFile, "; Loading variable %s from offset %d\n", var_name, var_elem->offset);
-    fprintf (ReportFile, "push [%d]\n", var_elem->offset);
-
-    return BACK_SUCCESS;
-}
-
-
-backErr_t TranslateAssignment(trans_t *trans)
-{
-    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_OP || TR_NODE_HASH != HASH_EQ) 
-    { 
-        return BACK_ERROR; 
-    }
-
-    if (IS_BAD_PTR(TR_NODE_L) || TR_NODE_L->type != ARG_VAR) { return BACK_ERROR; }
-    
-    const char* var_name = TR_NODE_L->item.var;
-    
-    ntElem_t* var_elem = findVar(trans, var_name);
-    if (IS_BAD_PTR(var_elem))
-    {
-        fprintf(stderr, ANSI_COLOR_RED "Error: Undefined variable '%s'\n" ANSI_COLOR_RESET, var_name);
-        return BACK_ERROR;
-    }
-
-    node_t *saved_node = TR_NODE;
-    TR_NODE = TR_NODE_R;
-    TranslatePrimary(trans);
-    TR_NODE = saved_node;
-
-    fprintf (ReportFile, "; Storing to variable %s at offset %d\n", var_name, var_elem->offset);
-    fprintf (ReportFile, "pop [%d]\n", var_elem->offset);
-    
-    return BACK_SUCCESS;
-}
-
-
-backErr_t TranslateFuncCall(trans_t *trans)
-{
-    if (IS_BAD_PTR(TR_NODE) || TR_NODE_TYPE != ARG_FUNC) { return BACK_ERROR; }
-
-    if (IS_BAD_PTR(TR_NODE_L)) { return BACK_ERROR; }
-    
-    const char* func_name = TR_NODE_L->item.func;
-    
-    if (!IS_BAD_PTR(TR_NODE_R) && TR_NODE_R->type == ARG_LINK)
-    {
-        node_t* param = TR_NODE_R;
-        int arg_count = 0;
-        
-        while (!IS_BAD_PTR(param) && param->type == ARG_LINK)
+        if (CUR_NAME_TABLE_POS == 0)
         {
-            if (!IS_BAD_PTR(param->right))
+            int offset = trans->global_offset;
+            trans->global_offset += 1;
+            
+            var_elem = addVar(trans, var_name, ARG_VAR, offset);
+            if (!IS_BAD_PTR(var_elem))
             {
-                node_t *saved_node = TR_NODE;
-                TR_NODE = param->right;
-                TranslatePrimary(trans);
-                TR_NODE = saved_node;
-                arg_count++;
+                fprintf(ReportFile, "push 0\n");
+                fprintf(ReportFile, "pop [%d]\n", offset);
             }
-            param = param->left;
         }
-        
-        fprintf(ReportFile, "; Pushing %d arguments for function %s\n", arg_count, func_name);
+        else
+        {
+            return BACK_ERROR;
+        }
     }
-    
-    fprintf (ReportFile, "call %s\n", func_name);
-    
-    fprintf (ReportFile, "; Cleaning up arguments\n");
+
+    if (CUR_NAME_TABLE_POS == 0)
+    {
+        fprintf(ReportFile, "push [%d]\n", var_elem->offset);
+    }
+    else
+    {
+        fprintf(ReportFile, "\n");
+        fprintf(ReportFile, "push r0\n");
+        fprintf(ReportFile, "push %d\n", var_elem->offset);
+        fprintf(ReportFile, "add\n");
+        fprintf(ReportFile, "pop r1\n");
+        fprintf(ReportFile, "push [r1]\n\n");
+    }
 
     return BACK_SUCCESS;
 }

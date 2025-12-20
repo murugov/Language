@@ -175,7 +175,7 @@ token_t *NextToken(lexer_t* lexer)
     if (key != NULL)
     {
         if (strncmp(lexer->cur_pos, key->name, (size_t)(key->len)) == 0)
-            return NewToken(key->type, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
+            return NewToken(ARG_OP, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
     }
 
     id_hash = (hash_t)(*lexer->cur_pos);
@@ -183,7 +183,7 @@ token_t *NextToken(lexer_t* lexer)
     if (key != NULL)
     {
         if (strncmp(lexer->cur_pos, key->name, (size_t)(key->len)) == 0)
-            return NewToken(key->type, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
+            return NewToken(ARG_OP, id_hash, start, key->len, lexer->cur_line, lexer->cur_col);
     }
     
     if (isalpha(*lexer->cur_pos)) { return ReadName(lexer); }

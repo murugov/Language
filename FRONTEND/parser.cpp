@@ -969,28 +969,20 @@ node_t* ParseVar(parser_t* parser)
         var_elem->offset          = CUR_NAME_TABLE_SIZE;
         var_elem->size_of_stk_frm = 0;
 
-        if(PREV_HASH == HASH_INIT && !IS_BAD_PTR(htFind(CUR_NAME_TABLE, &var_elem, TakeStrFromNT)))
+        if(CUR_POS != 0 && PREV_HASH == HASH_INIT && !IS_BAD_PTR(htFind(CUR_NAME_TABLE, &var_elem, TakeStrFromNT)))
         {
             FreeNodes(var_node);
             free(var_elem);
             PrintError(parser, CUR_TOKEN, "Redeclarated variable");
             return NULL;
         }
-        else if(PREV_HASH == HASH_COMMA && !IS_BAD_PTR(htFind(CUR_NAME_TABLE, &var_elem, TakeStrFromNT)))
+        else if(CUR_POS != 0 && PREV_HASH == HASH_COMMA && !IS_BAD_PTR(htFind(CUR_NAME_TABLE, &var_elem, TakeStrFromNT)))
         {
             FreeNodes(var_node);
             free(var_elem);
             PrintError(parser, CUR_TOKEN, "Redeclarated variable");
             return NULL;
         }
-        // else if(PREV_HASH != HASH_INIT && PREV_HASH != HASH_COMMA && PREV_HASH != HASH_LPAREN && IS_BAD_PTR(htFind(CUR_NAME_TABLE, &var_elem, TakeStrFromNT)))
-        // {
-        //     FreeNodes(var_node);
-        //     free(var_elem);
-        //     PrintError(parser, CUR_TOKEN, "Undeclarated variable");
-        //     return NULL;
-        // }
-        // // mistake in third condition
         htInsert(CUR_NAME_TABLE, &var_elem, TakeStrFromNT); 
     }
     

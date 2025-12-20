@@ -1,16 +1,16 @@
-# Пример работ языка Cino-Casino 
-razvod slot_mashina(stavka_1, stavka_2, stavka_3)
-{
-    esli_zaletelo (stavka_1 < stavka_2)
-    {
+razvod slot_mashina stavka_otkrita stavka_1 plus_esche stavka_2 plus_esche stavka_3 stavka_zacrita
+vihod_iz_igri
+    esli_zaletelo stavka_otkrita stavka_1 podcrutil stavka_2 stavka_zacrita
+    vihod_iz_igri
         vivesti 9$
-    }
+    vihod_iz_igri
     esli_proebali
-    {
-        stavka_3 = 7$
-    }
+        vhod_v_igru
+            stavka_3 = 7$
+        vihod_iz_igri
     stavka_1 = 0$
     vivesti stavka_2$
-}
+vihod_iz_igri
+
 dodep stavka = 10$
-dodep freebet = slot_mashina(7, 7, 7)$
+dodep freebet = slot_mashina(7 plus_esche 7 plus_esche 7)$

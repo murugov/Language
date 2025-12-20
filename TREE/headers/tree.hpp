@@ -114,6 +114,7 @@ struct tree_t
 
 struct keyword_t
 {
+    // const char* my_name;
     type_t      type;
     const char* name;
     int         len;

@@ -10,8 +10,8 @@ int main()                  // argc/argv
 
     TranslateTree(trans, "src/CompileFiles/source.asm");
 
-    GenTrees(trans->node, __func__);
-    GenHTML(PATH_TO_HTML);
+    // GenTrees(trans->node, __func__);
+    // GenHTML(PATH_TO_HTML);
 
     transDtor(trans);
     LogFileCloser();

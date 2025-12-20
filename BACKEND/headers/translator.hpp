@@ -11,7 +11,10 @@
 #include "dump.hpp"
 #include "colors.hpp"
 
-#define CMP_REG "r0"
+#define ADR_REG "r0"
+
+#define GLOBAL_OFFSET     1000
+#define MAX_NUM_FUNC_ARGS 8
 
 extern FILE *ReportFile;
 
@@ -34,6 +37,7 @@ struct trans_t
     node_t*                  node;
     stk_t<ht_t<ntElem_t*>*>* name_tables;
     int                      cur_name_table;
+    int                      global_offset;
 };
 
 char *DataReader(FILE *SourceFile);
@@ -43,12 +47,14 @@ backErr_t transCtor(trans_t *trans, const char *src);
 backErr_t transDtor(trans_t *trans);
 
 backErr_t TranslateTree(trans_t *trans, const char* report);
-backErr_t CompileFunctions(trans_t *trans, node_t* node);
-backErr_t CompileMainCode(trans_t *trans, node_t* node);
-backErr_t TranslatePrimary(trans_t *trans);
+backErr_t CompileOnlyFunc(trans_t *trans);
+backErr_t CompileNotFunc(trans_t *trans);
+backErr_t FindAndCompileInits(trans_t *trans);
 
+backErr_t TranslatePrimary(trans_t *trans);
 backErr_t TranslateCalc(trans_t *trans);
 backErr_t TranslateVarInit(trans_t *trans);
+backErr_t TranslateFuncDef(trans_t *trans);
 backErr_t TranslateAssignment(trans_t *trans);
 backErr_t TranslateCondition(trans_t *trans);
 backErr_t TranslateFuncCall(trans_t *trans);
@@ -59,17 +65,18 @@ backErr_t TranslateReturn(trans_t *trans);
 
 backErr_t TranslateOp(trans_t *trans);
 backErr_t TranslateVar(trans_t *trans);
-backErr_t TranslateFunc (trans_t *trans);
 
 
 #define TR_NODE      (trans->node)
-#define TR_NODE_ITEM (trans->node->item)
+#define TR_NODE_NUM  (trans->node->item.num)
 #define TR_NODE_HASH (trans->node->item.op)
+#define TR_NODE_VAR  (trans->node->item.var)
+#define TR_NODE_FUNC (trans->node->item.func)
 #define TR_NODE_TYPE (trans->node->type)
 #define TR_NODE_L    (trans->node->left)
 #define TR_NODE_R    (trans->node->right)
 
-#define CUR_NAME_TABLE      (trans->name_tables->data[parser->cur_name_table])
+#define CUR_NAME_TABLE      (trans->name_tables->data[trans->cur_name_table])
 #define CUR_NAME_TABLE_POS  (trans->cur_name_table)
 #define CUR_NAME_TABLE_SIZE (trans->name_tables->size)
 

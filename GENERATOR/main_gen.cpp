@@ -67,44 +67,44 @@ int main()
 
 
 
-    FILE *SourceSpuFile = fopen(PATH_TO_SRC_SPU_FILE, "r");
-    if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_SRC_SPU_FILE); return EXIT_FAILURE; }
+    // FILE *SourceSpuFile = fopen(PATH_TO_SRC_SPU_FILE, "r");
+    // if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_SRC_SPU_FILE); return EXIT_FAILURE; }
 
-    FILE *CmdEnumsFile = fopen(PATH_TO_CMD_CODES_FILE, "w");
-    if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_CMD_CODES_FILE); return EXIT_FAILURE; }
+    // FILE *CmdEnumsFile = fopen(PATH_TO_CMD_CODES_FILE, "w");
+    // if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_CMD_CODES_FILE); return EXIT_FAILURE; }
 
-    FILE *AsmInstrSetFile = fopen(PATH_TO_ASM_INSTR_SET, "w");
-    if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_ASM_INSTR_SET); return EXIT_FAILURE; }
+    // FILE *AsmInstrSetFile = fopen(PATH_TO_ASM_INSTR_SET, "w");
+    // if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_ASM_INSTR_SET); return EXIT_FAILURE; }
 
-    FILE *SpuInstrSetFile = fopen(PATH_TO_SPU_INSTR_SET, "w");
-    if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_SPU_INSTR_SET); return EXIT_FAILURE; }
+    // FILE *SpuInstrSetFile = fopen(PATH_TO_SPU_INSTR_SET, "w");
+    // if (IS_BAD_PTR(OpInstrSetFile)) { printf(ANSI_COLOR_RED "Bad pointer %s!\n" ANSI_COLOR_RESET, PATH_TO_SPU_INSTR_SET); return EXIT_FAILURE; }
 
-    char* buffer_2 = NULL;
-    size_t len_buffer_2 = 0;
-    int count_line_2 = 0;
-    char **arr_ptr_2 = TXTreader(SourceSpuFile, buffer_2, &len_buffer_2, &count_line_2, NULL);
-    if (IS_BAD_PTR(arr_ptr_2)) printf(ANSI_COLOR_RED "Error reading %s!\n" ANSI_COLOR_RESET, PATH_TO_SRC_SPU_FILE);
+    // char* buffer_2 = NULL;
+    // size_t len_buffer_2 = 0;
+    // int count_line_2 = 0;
+    // char **arr_ptr_2 = TXTreader(SourceSpuFile, buffer_2, &len_buffer_2, &count_line_2, NULL);
+    // if (IS_BAD_PTR(arr_ptr_2)) printf(ANSI_COLOR_RED "Error reading %s!\n" ANSI_COLOR_RESET, PATH_TO_SRC_SPU_FILE);
 
-    RemoveComments(arr_ptr_2, &count_line_2);
+    // RemoveComments(arr_ptr_2, &count_line_2);
 
-    if (GenCmdEnum(CmdEnumsFile, arr_ptr_2, (size_t)count_line_2))
-        printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_CMD_CODES_FILE);
-    else
-        printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
-    if (GenAsmInstrSet(AsmInstrSetFile, arr_ptr_2, (size_t)count_line_2))
-        printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_ASM_INSTR_SET);
-    else
-        printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
-    if (GenSpuInstrSet(SpuInstrSetFile, arr_ptr_2, (size_t)count_line_2))
-        printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_SPU_INSTR_SET);
-    else
-        printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
+    // if (GenCmdEnum(CmdEnumsFile, arr_ptr_2, (size_t)count_line_2))
+    //     printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_CMD_CODES_FILE);
+    // else
+    //     printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
+    // if (GenAsmInstrSet(AsmInstrSetFile, arr_ptr_2, (size_t)count_line_2))
+    //     printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_ASM_INSTR_SET);
+    // else
+    //     printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
+    // if (GenSpuInstrSet(SpuInstrSetFile, arr_ptr_2, (size_t)count_line_2))
+    //     printf(ANSI_COLOR_RED "Error creating %s!\n" ANSI_COLOR_RESET, PATH_TO_SPU_INSTR_SET);
+    // else
+    //     printf(ANSI_COLOR_GREEN "SUCCESS\n" ANSI_COLOR_RESET);
 
 
-    FreeLines(arr_ptr_2, count_line_2);
-    fclose(SourceSpuFile);
-    fclose(AsmInstrSetFile);
-    fclose(SpuInstrSetFile);
+    // FreeLines(arr_ptr_2, count_line_2);
+    // fclose(SourceSpuFile);
+    // fclose(AsmInstrSetFile);
+    // fclose(SpuInstrSetFile);
 
     return 0;
 }
@@ -323,20 +323,21 @@ GenErr_t GenKeywordSet(FILE *KeywordSetFile, char **arr_ptr, int count_line)
         if (*arr_ptr[line] == '\0') 
             continue;
         
-        if (sscanf(arr_ptr[line], "%15[^:]: \"%15[^\"]\";", 
+        if (sscanf(arr_ptr[line], "%15[^:]: \"%15[^\"]\", \"%15[^\"]\";", 
                    func_infos[actual_count].name, 
-                   func_infos[actual_count].key) == 2)
+                   func_infos[actual_count].key_1,
+                   func_infos[actual_count].key_2) == 3)
         {
             size_t name_len = strlen(func_infos[actual_count].name);
-            size_t key_len  = strlen(func_infos[actual_count].key);
+            size_t key_len  = strlen(func_infos[actual_count].key_2);
             
             if (name_len > max_name_len) max_name_len = name_len;
             if (key_len > max_key_len) max_key_len = key_len;
             
             if (key_len == 1)
-                func_infos[actual_count].hash = (hash_t)(*func_infos[actual_count].key);
+                func_infos[actual_count].hash = (hash_t)(*func_infos[actual_count].key_2);
             else
-                func_infos[actual_count].hash = GetHash(func_infos[actual_count].key);
+                func_infos[actual_count].hash = GetHash(func_infos[actual_count].key_2);
 
             actual_count++;
         }
@@ -347,18 +348,20 @@ GenErr_t GenKeywordSet(FILE *KeywordSetFile, char **arr_ptr, int count_line)
     for (int i = 0; i < actual_count - 1; ++i)
     {
         fprintf(KeywordSetFile, 
-                "\t{ARG_OP, \"%s\",\t%zu ,\t0x%zX},\n",
-                func_infos[i].key,
-                strlen(func_infos[i].key),
+                "\t{\"%s\", \"%s\",\t%zu ,\t0x%zX},\n",
+                func_infos[i].key_2,
+                func_infos[i].key_1,
+                strlen(func_infos[i].key_2),
                 func_infos[i].hash);
     }
     
     if (actual_count > 0)
     {
         fprintf(KeywordSetFile, 
-                "\t{ARG_OP, \"%s\",\t%zu ,\t0x%zX}\n",
-                func_infos[actual_count - 1].key,
-                strlen(func_infos[actual_count - 1].key),
+                "\t{\"%s\", \"%s\",\t%zu ,\t0x%zX}\n",
+                func_infos[actual_count - 1].key_2,
+                func_infos[actual_count - 1].key_1,
+                strlen(func_infos[actual_count - 1].key_2),
                 func_infos[actual_count - 1].hash);
     }
 

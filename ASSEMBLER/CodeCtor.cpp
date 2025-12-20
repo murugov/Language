@@ -1,7 +1,7 @@
 #include "assembler.hpp"
 
 
-AsmErr_t CodeCtor(FILE *ByteCode, char **arr_cmd, int count_cmd)
+amErr_t CodeCtor(FILE *ByteCode, char **arr_cmd, int count_cmd)
 {    
     if (IS_BAD_PTR(ByteCode))
         return ASM_BAD_OUTPUT_FILE_PTR;
@@ -22,11 +22,11 @@ AsmErr_t CodeCtor(FILE *ByteCode, char **arr_cmd, int count_cmd)
 
     size_t pc = 0;
     
-    AsmErr_t first_pass = FirstCompilation(arr_cmd, (size_t)count_cmd, arr_labels, &count_labels, &pc);
+    amErr_t first_pass = FirstCompilation(arr_cmd, (size_t)count_cmd, arr_labels, &count_labels, &pc);
     if (first_pass != ASM_SUCCESS)
         return first_pass;
 
-    AsmErr_t second_pass = SecondCompilation(code, arr_cmd, (size_t)count_cmd, arr_labels, &count_labels, &pc);
+    amErr_t second_pass = SecondCompilation(code, arr_cmd, (size_t)count_cmd, arr_labels, &count_labels, &pc);
     if (second_pass != ASM_SUCCESS)
         return second_pass;
 

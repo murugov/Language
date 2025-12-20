@@ -20,7 +20,7 @@ DUMP_FILES	  = DUMP/GenGraphs.cpp
 FRONT_FILES	  = FRONTEND/lexer.cpp FRONTEND/token.cpp FRONTEND/parser.cpp FRONTEND/PrintAST.cpp
 BACK_FILES	  = BACKEND/DataReader.cpp BACKEND/translator.cpp
 WOLFRAM_FILES = WOLFRAM_SIGMA/VerifyInstrSet.cpp WOLFRAM_SIGMA/WolfFunc.cpp WOLFRAM_SIGMA/CalcFunc.cpp WOLFRAM_SIGMA/SimplifyTree.cpp WOLFRAM_SIGMA/CalcExpression.cpp WOLFRAM_SIGMA/parseWolfTree.cpp
-ASM_FILES 	  = ASSEMBLER/ArrPtrCtor.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmCmdWrt.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeCtor.cpp ASSEMBLER/FirstCompilation.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/SecondCompilation.cpp
+ASM_FILES 	  = ASSEMBLER/ArrPtrFunc.cpp ASSEMBLER/AsmArgParser.cpp ASSEMBLER/AsmCmdWrt.cpp ASSEMBLER/AsmErrPrint.cpp ASSEMBLER/AsmVerifySort.cpp ASSEMBLER/CodeCtor.cpp ASSEMBLER/FirstCompilation.cpp ASSEMBLER/HashCmd.cpp ASSEMBLER/SecondCompilation.cpp
 # SPU_FILES 	  = SPU/CalcFunc.cpp SPU/spuCtor.cpp SPU/spuErrPrint.cpp SPU/spuExecutor.cpp SPU/SpuVerifySort.cpp SPU/SpuArgParser.cpp
 
 DEFAULT_SRC   ?=  src/data.txt

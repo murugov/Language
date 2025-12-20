@@ -2,7 +2,7 @@
 #include "AsmInstrSet.cpp"
 
 
-AsmErr_t VerifyAsmInstrSetSort()
+amErr_t VerifyAsmInstrSetSort()
 {
     for (size_t elem = 1; elem < LEN_INSTR_SET; ++elem)
     {

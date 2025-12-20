@@ -1,12 +1,7 @@
-def f(a, b, c)
+def sum(a, b)
 {
-    if (g == b)
-    {
-        return 9;
-    }
-    a = 0;
-    return b;
+    init c = a + b;
+    return c;
 }
 
-init x = 10;
-init y = f(x, 2, 3);
+init res = sum(1, 2);

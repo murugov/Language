@@ -1,7 +1,7 @@
 #include "assembler.hpp"
 
 
-void AsmErrPrint(char *SourceFile, char *ByteCode, AsmErr_t verd)
+void AsmErrPrint(char *SourceFile, char *ByteCode, amErr_t verd)
 {
     switch (verd)
     {
