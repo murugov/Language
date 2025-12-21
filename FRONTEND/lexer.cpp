@@ -200,7 +200,7 @@ static token_t *ReadNum(lexer_t *lexer)
 {
     int tmp_num = 0.0;
     int num_digits = 0;
-    if (sscanf(lexer->cur_pos, "%d%n", &tmp_num, &num_digits) != 1) return NULL;
+    if (sscanf(lexer->cur_pos, "%d%n", &tmp_num, &num_digits) != 1) return NULL;        //TODO: strtod
 
     token_t* token = NewToken(ARG_NUM, 0, lexer->cur_pos, num_digits, lexer->cur_line + 1, lexer->cur_col);
     

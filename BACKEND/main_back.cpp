@@ -10,8 +10,7 @@ int main()                  // argc/argv
 
     TranslateTree(trans, "src/CompileFiles/source.asm");
 
-    GenTrees(trans->node, "__func__");
-    GenHTML(PATH_TO_HTML);
+    printf(ANSI_COLOR_GREEN "Successfully translated\n" ANSI_COLOR_RESET);
 
     transDtor(trans);
     LogFileCloser();

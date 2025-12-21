@@ -1,8 +1,10 @@
-#include "./parser.hpp"
+#include "AstParser.hpp"
 #include "KeywordSet.cpp"
 
+static int CmpHashForBinSearch(const void *a, const void *b);
 
-void PrintAST(node_t* node, FILE* stream)
+
+void AstWriter(node_t* node, FILE* stream)
 {
     if (IS_BAD_PTR(node)) { fprintf (stream, " nil"); return; }
 
@@ -43,8 +45,21 @@ void PrintAST(node_t* node, FILE* stream)
             break;
     }
 
-    PrintAST(node->left, stream);
-    PrintAST(node->right, stream);
+    AstWriter(node->left, stream);
+    AstWriter(node->right, stream);
 
     fprintf (stream, ")");
+}
+
+
+static int CmpHashForBinSearch(const void *a, const void *b)
+{
+    const hash_t    *hash_a    = (const hash_t*)a;
+    const keyword_t *keyword_b = (const keyword_t*)b;
+    
+    if (*hash_a > keyword_b->hash)
+        return 1;
+    if (*hash_a < keyword_b->hash)
+        return -1;
+    return 0;
 }

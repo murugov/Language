@@ -9,7 +9,7 @@ static int LEN_ARG_TYPE_SET = sizeof(arg_type_set) / sizeof(arg_type_set[0]);
 static int CheckType(const char* type);
 
 
-char *DataReader(FILE *SourceFile)
+char *AstReader(FILE *SourceFile)
 {    
     ON_DEBUG( if (IS_BAD_PTR(SourceFile)) { LOG(ERROR, "Bad pointer of SourceFile in DataReader"); return NULL; })
 
@@ -32,7 +32,7 @@ char *DataReader(FILE *SourceFile)
 #define SKIP_TYPE(ptr) while (*(ptr) != ':' && *(ptr) != '\0') (ptr)++
 #define SKIP_VALUE(ptr) while (*(ptr) != '\"' && *(ptr) != '\0') (ptr)++
 
-node_t* NodeReader(char** cur_ptr, node_t* parent)
+node_t *NodeReader(char** cur_ptr, node_t* parent)
 {
     if (IS_BAD_PTR(cur_ptr) || IS_BAD_PTR(*cur_ptr)) { return NULL; }
     

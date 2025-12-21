@@ -19,7 +19,7 @@ frontErr_t parserCtor(parser_t *parser, const char *src)
     }
     
     lexer_t *lexer = (lexer_t*)calloc(1, sizeof(lexer_t));
-    LexerCtor(lexer, lines, count_lines, src);
+    LexerCtor(lexer, lines, count_lines, src);          // TODO: переместить из конструктура
     if (IS_BAD_PTR(lexer))
     {
         printf("Error: Failed to initialize lexer\n");

@@ -117,7 +117,6 @@ struct keyword_t
     const char* name;
     int         len;
     hash_t      hash;
-    // type_t      type;
     const char* c_name;
     int         c_len;
     hash_t      c_hash;
@@ -127,6 +126,7 @@ TreeErr_t TreeInit(tree_t *tree, const char *name, const char *file, const char 
 TreeErr_t TreeCtor(tree_t *tree);
 
 node_t *NewNode(type_t type, val item, node_t *left, node_t *right);
+node_t *CopyNode(node_t *node);
 void set_parents(node_t *node, node_t *parent);
 
 TreeErr_t FreeNodes(node_t *node);

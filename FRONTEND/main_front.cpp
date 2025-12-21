@@ -1,4 +1,5 @@
 #include "./parser.hpp"
+#include "AstParser.hpp"
 
 
 int main()                  // argc/argv
@@ -14,7 +15,8 @@ int main()                  // argc/argv
         printf(ANSI_COLOR_GREEN "Successfully parsed\n" ANSI_COLOR_RESET);
         GenTrees(ast, __func__);
         FILE* report = fopen("reports/ast.txt", "w");
-        PrintAST(ast, report);
+        AstWriter(ast, report);
+        fclose(report);
         FreeNodes(ast);
     }
     else

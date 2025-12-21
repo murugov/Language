@@ -1,4 +1,5 @@
 #include "translator.hpp"
+#include "AstParser.hpp"
 
 static int condition_count = 0;
 static int if_count = 0;
@@ -27,7 +28,7 @@ backErr_t transCtor(trans_t *trans, const char *src)
         return BACK_ERROR; 
     }
 
-    char *buffer = DataReader(SourceFile);
+    char *buffer = AstReader(SourceFile);
     trans->node = NodeReader(&buffer, NULL);
     ON_DEBUG( if (IS_BAD_PTR(trans->node)) return BACK_ERROR;)
     
@@ -213,7 +214,7 @@ static ntElem_t* addVar(trans_t *trans, const char* var_name, int type, int offs
     new_var->name = strdup(var_name);
     new_var->type = (type_t)type;
     new_var->offset = offset;
-    new_var->size_of_stk_frm = 1;
+    new_var->size_of_stk_frm = 1;                                           // нужно ли?
     
     if (htInsert(CUR_NAME_TABLE, &new_var, ntElemToStr) != HT_SUCCESS)
     {
@@ -249,12 +250,12 @@ backErr_t TranslateTree(trans_t *trans, const char* report)
     
     fprintf(ReportFile, "\nmain:\n\n");
     
-    fprintf(ReportFile, "push %s\n", FP);         
+    PUSH(FP);         
     fprintf(ReportFile, "pop [0]\n");          
-    fprintf(ReportFile, "push %s\n", FP);          
-    fprintf(ReportFile, "pop %s\n", TP);          
-    fprintf(ReportFile, "push %s\n", TP);
-    fprintf(ReportFile, "pop %s\n\n", FP);
+    PUSH(FP);         
+    POP(TP);         
+    PUSH(TP);         
+    POP(FP);
     
     trans->node = original_node;
     
@@ -265,7 +266,7 @@ backErr_t TranslateTree(trans_t *trans, const char* report)
     }
     
     fprintf(ReportFile, "push [0]\n");
-    fprintf(ReportFile, "pop %s\n", FP);
+    POP(FP);
         
     fprintf(ReportFile, "\nhlt\n");
     
@@ -360,7 +361,7 @@ backErr_t CompileNotFunc(trans_t *trans)
         return compile_verd;
     }
     
-    return TranslatePrimary(trans);
+    return TranslatePrimaryStatement(trans);
 }
 
 
@@ -401,7 +402,7 @@ backErr_t FindAndCompileInits(trans_t *trans)
 }
 
 
-backErr_t TranslatePrimary(trans_t *trans)
+backErr_t TranslatePrimaryStatement(trans_t *trans)
 {
     if (IS_BAD_PTR(TR_NODE)) { return BACK_SUCCESS; }
         
@@ -417,12 +418,12 @@ backErr_t TranslatePrimary(trans_t *trans)
     {
         case ARG_LINK:
             TR_NODE = TR_NODE_L;
-            verd = TranslatePrimary(trans);
+            verd = TranslatePrimaryStatement(trans);
             TR_NODE = saved_node;
             if (verd != BACK_SUCCESS) { return verd; }
             
             TR_NODE = TR_NODE_R;
-            verd = TranslatePrimary(trans);
+            verd = TranslatePrimaryStatement(trans);
             TR_NODE = saved_node;
             if (verd != BACK_SUCCESS) { return verd; }
 
@@ -502,7 +503,7 @@ backErr_t TranslateOp(trans_t *trans)
             if (!IS_BAD_PTR(TR_NODE_L))
             { 
                 TR_NODE = TR_NODE_L;
-                verd = TranslatePrimary(trans); 
+                verd = TranslatePrimaryStatement(trans); 
                 TR_NODE = saved_node;
                 if (verd != BACK_SUCCESS) return verd;
             }
@@ -510,7 +511,7 @@ backErr_t TranslateOp(trans_t *trans)
             if (!IS_BAD_PTR(TR_NODE_R))
             { 
                 TR_NODE = TR_NODE_R;
-                verd = TranslatePrimary(trans); 
+                verd = TranslatePrimaryStatement(trans); 
                 TR_NODE = saved_node;
                 if (verd != BACK_SUCCESS) return verd;
             }
@@ -532,12 +533,12 @@ backErr_t TranslateCalc(trans_t *trans)
     node_t *saved_node = TR_NODE;
 
     TR_NODE = TR_NODE_L;
-    backErr_t res = TranslatePrimary(trans);
+    backErr_t res = TranslatePrimaryStatement(trans);
     if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
     
     TR_NODE = TR_NODE_R;
-    res = TranslatePrimary(trans);
+    res = TranslatePrimaryStatement(trans);
     if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
 
@@ -576,12 +577,12 @@ backErr_t TranslateCondition(trans_t *trans)
     node_t *saved_node = TR_NODE;
 
     TR_NODE = TR_NODE_L;
-    backErr_t res = TranslatePrimary(trans);
+    backErr_t res = TranslatePrimaryStatement(trans);
     if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
     
     TR_NODE = TR_NODE_R;
-    res = TranslatePrimary(trans);
+    res = TranslatePrimaryStatement(trans);
     if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
     TR_NODE = saved_node;
     
@@ -594,16 +595,16 @@ backErr_t TranslateCondition(trans_t *trans)
             fprintf(ReportFile, "jne ");
             break;
         case HASH_GT:
-            fprintf(ReportFile, "jb ");
-            break;
-        case HASH_LT:
             fprintf(ReportFile, "ja ");
             break;
+        case HASH_LT:
+            fprintf(ReportFile, "jb ");
+            break;
         case HASH_GE:
-            fprintf(ReportFile, "jbe ");
+            fprintf(ReportFile, "jae ");
             break;
         case HASH_LE:
-            fprintf(ReportFile, "jae ");
+            fprintf(ReportFile, "jbe ");
             break;    
         default:
             return BACK_ERROR;
@@ -637,7 +638,7 @@ backErr_t TranslateIf(trans_t *trans)
     {
         TR_NODE = TR_NODE_L;
         backErr_t res = TranslateCondition(trans);
-        if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+        if (res != BACK_SUCCESS) { TR_NODE = saved_node; exitScope(trans); return res; }
         TR_NODE = saved_node;
     }
 
@@ -655,8 +656,8 @@ backErr_t TranslateIf(trans_t *trans)
         if (!IS_BAD_PTR(TR_NODE_R->left))
         {
             TR_NODE = TR_NODE_R->left;
-            backErr_t res = TranslatePrimary(trans);
-            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            backErr_t res = TranslatePrimaryStatement(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; exitScope(trans); return res; }
             TR_NODE = saved_node;
         }
 
@@ -666,8 +667,8 @@ backErr_t TranslateIf(trans_t *trans)
         if (!IS_BAD_PTR(TR_NODE_R->right))
         {
             TR_NODE = TR_NODE_R->right;
-            backErr_t res = TranslatePrimary(trans);
-            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            backErr_t res = TranslatePrimaryStatement(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; exitScope(trans); return res; }
             TR_NODE = saved_node;
         }
     }
@@ -679,8 +680,8 @@ backErr_t TranslateIf(trans_t *trans)
         if (!IS_BAD_PTR(TR_NODE_R))
         {
             TR_NODE = TR_NODE_R;
-            backErr_t res = TranslatePrimary(trans);
-            if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
+            backErr_t res = TranslatePrimaryStatement(trans);
+            if (res != BACK_SUCCESS) { TR_NODE = saved_node; exitScope(trans); return res; }
             TR_NODE = saved_node;
         }
     }
@@ -720,7 +721,7 @@ backErr_t TranslateWhile(trans_t *trans)
     if (TR_NODE_TYPE == ARG_OP && !IS_BAD_PTR(TR_NODE_R))
     {
         TR_NODE = TR_NODE_R;
-        backErr_t res = TranslatePrimary(trans);
+        backErr_t res = TranslatePrimaryStatement(trans);
         if (res != BACK_SUCCESS) { TR_NODE = saved_node; return res; }
         TR_NODE = saved_node;
     }
@@ -743,16 +744,15 @@ backErr_t TranslateReturn(trans_t *trans)
     {
         node_t *saved_node = TR_NODE;
         TR_NODE = TR_NODE_L;
-        backErr_t verd = TranslatePrimary(trans);
+        backErr_t verd = TranslatePrimaryStatement(trans);
         TR_NODE = saved_node;
         if (verd != BACK_SUCCESS) return verd;
     }
 
-    fprintf(ReportFile, "\n");
-    fprintf(ReportFile, "push %s\n", FP);
-    fprintf(ReportFile, "pop %s\n", TP);
-    fprintf(ReportFile, "push [%s]\n", TP);
-    fprintf(ReportFile, "pop %s\n", FP);
+    PUSH(FP);
+    POP(TP);
+    PUSHM(TP);
+    POP(FP);
     fprintf(ReportFile, "ret\n");
 
     return BACK_SUCCESS;
@@ -772,12 +772,12 @@ backErr_t TranslateFuncDef(trans_t *trans)
             const char* func_name = TR_NODE_L->item.func;
             fprintf(ReportFile, "%s:\n\n", func_name);
             
-            fprintf(ReportFile, "push %s\n", FP);          
-            fprintf(ReportFile, "push %s\n", FP);        
-            fprintf(ReportFile, "pop %s\n", TP);           
-            fprintf(ReportFile, "pop [%s]\n", FP);        
-            fprintf(ReportFile, "push %s\n", TP);          
-            fprintf(ReportFile, "pop %s\n\n", FP);
+            PUSH(FP);          
+            PUSH(FP);       
+            POP(TP);         
+            POPM(FP);       
+            PUSH(TP);         
+            POP(FP);
             
             if (enterScope(trans) != BACK_SUCCESS)
             { 
@@ -813,16 +813,13 @@ backErr_t TranslateFuncDef(trans_t *trans)
                     return BACK_ERROR;
                 }
                 
-                fprintf(ReportFile, "\n");
-                fprintf(ReportFile, "pop %s\n", TP);          
-                fprintf(ReportFile, "push %s\n", FP);         
+                POP(TP);        
+                PUSH(FP);        
                 fprintf(ReportFile, "push %d\n", param_offset);
                 fprintf(ReportFile, "add\n");              
-                fprintf(ReportFile, "pop %s\n", FP);   
-                fprintf(ReportFile, "push %s\n", TP);  
-                fprintf(ReportFile, "pop [%s]\n", FP); 
-                fprintf(ReportFile, "pop %s\n", FP);   
-                fprintf(ReportFile, "\n");
+                POP(FP);   
+                PUSH(TP);  
+                POPM(FP); 
             }
             
             node_t* func_body = TR_NODE_R->right;
@@ -831,7 +828,7 @@ backErr_t TranslateFuncDef(trans_t *trans)
                 node_t* saved_body_node = TR_NODE;
                 
                 TR_NODE = func_body;
-                backErr_t result = TranslatePrimary(trans);                
+                backErr_t result = TranslatePrimaryStatement(trans);                
                 TR_NODE = saved_body_node;
                 
                 if (result != BACK_SUCCESS)
@@ -843,17 +840,14 @@ backErr_t TranslateFuncDef(trans_t *trans)
             }
             else
             {
-                fprintf(ReportFile, "\n");
                 fprintf(ReportFile, "push 0\n");
-                fprintf(ReportFile, "\n");
             }
             
-            fprintf(ReportFile, "\n");
-            fprintf(ReportFile, "push %s\n", FP);
-            fprintf(ReportFile, "pop %s\n", TP);
-            fprintf(ReportFile, "push [%s]\n", TP);
-            fprintf(ReportFile, "pop %s\n", FP);
-            fprintf(ReportFile, "ret\n\n");
+            PUSH(FP);
+            POP(TP);
+            PUSHM(TP);
+            POP(FP);
+            fprintf(ReportFile, "ret\n");
             
             if (exitScope(trans) != BACK_SUCCESS)
             { 
@@ -908,7 +902,7 @@ backErr_t TranslateFuncCall(trans_t *trans)
         if (!IS_BAD_PTR(arg_nodes[i]))
         {
             TR_NODE = arg_nodes[i];
-            backErr_t res = TranslatePrimary(trans);
+            backErr_t res = TranslatePrimaryStatement(trans);
             if (res != BACK_SUCCESS) 
             { 
                 TR_NODE = saved_node;
@@ -996,19 +990,18 @@ backErr_t TranslateAssignment(trans_t *trans)
         }
         else
         {
-            fprintf(ReportFile, "\n");
             fprintf(ReportFile, "push 0\n");
-            fprintf(ReportFile, "push %s\n", FP);
+            PUSH(FP);
             fprintf(ReportFile, "push %d\n", offset);
             fprintf(ReportFile, "add\n");
-            fprintf(ReportFile, "pop %s\n", TP);
-            fprintf(ReportFile, "pop [%s]\n\n", TP);
+            POP(TP);
+            POPM(TP);
         }
     }
 
     node_t *saved_node = TR_NODE;
     TR_NODE = TR_NODE_R;
-    backErr_t res = TranslatePrimary(trans);
+    backErr_t res = TranslatePrimaryStatement(trans);
     TR_NODE = saved_node;
     if (res != BACK_SUCCESS) { return res; }
 
@@ -1018,12 +1011,11 @@ backErr_t TranslateAssignment(trans_t *trans)
     }
     else
     {
-        fprintf(ReportFile, "\n");
-        fprintf(ReportFile, "push %s\n", FP);
+        PUSH(FP);
         fprintf(ReportFile, "push %d\n", var_elem->offset);
         fprintf(ReportFile, "add\n");
-        fprintf(ReportFile, "pop %s\n", TP);
-        fprintf(ReportFile, "pop [%s]\n\n", TP);
+        POP(TP);
+        POPM(TP);
     }
     
     return BACK_SUCCESS;
@@ -1064,12 +1056,11 @@ backErr_t TranslateVar(trans_t *trans)
     }
     else
     {
-        fprintf(ReportFile, "\n");
-        fprintf(ReportFile, "push %s\n", FP);
+        PUSH(FP);
         fprintf(ReportFile, "push %d\n", var_elem->offset);
         fprintf(ReportFile, "add\n");
-        fprintf(ReportFile, "pop %s\n", TP);
-        fprintf(ReportFile, "push [%s]\n\n", TP);
+        POP(TP);
+        PUSHM(TP);
     }
 
     return BACK_SUCCESS;

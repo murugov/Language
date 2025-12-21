@@ -1,7 +1,7 @@
-razvod slot_mashina stavka_otkrita stavka_1 stavka_zakrita
+razvod po_factam stavka_otkrita million stavka_zakrita
 vhod_v_igru
-    vivesti 8 $
+    vivesti million $
 vihod_iz_igri
 
-dodep stavka chetko 10$
-dodep freebet chetko slot_mashina stavka_otkrita 7 stavka_zakrita $
+dodep stavka chetko 3 $
+dodep freebet chetko po_factam stavka_otkrita stavka stavka_zakrita $

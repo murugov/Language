@@ -1,6 +1,7 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
+#include "math.h"
 #include "tree.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
@@ -54,7 +55,6 @@ node_t* ParseBlock(parser_t* parser);
 node_t* ParseVar(parser_t* parser);
 node_t* ParseNum(parser_t* parser);
 
-void PrintAST(node_t* node, FILE* stream);
 
 #define CUR_TOKEN (parser->lexer->tokens->data[parser->lexer->cur_token])
 #define CUR_TYPE  (CUR_TOKEN->type)
@@ -80,5 +80,14 @@ void PrintAST(node_t* node, FILE* stream);
 #define CUR_NAME_TABLE      (parser->name_tables->data[parser->cur_name_table])
 #define CUR_NAME_TABLE_POS  (parser->cur_name_table)
 #define CUR_NAME_TABLE_SIZE (parser->name_tables->size)
+
+struct op_t
+{
+	hash_t hash;
+	char   name[8];
+	int    num_args;
+	calc_t calc;
+	diff_t diff;
+};
 
 #endif

@@ -52,6 +52,24 @@ val valVAR(const char* ptr, int len)  { val v; v.var  = strndup(ptr, (size_t)len
 val valFUNC(const char* ptr, int len) { val f; f.func = strndup(ptr, (size_t)len); return f; }
 
 
+node_t *CopyNode(node_t *node)
+{
+    if (node == NULL) return NULL;
+
+    node_t *new_node = (node_t*)calloc(1, sizeof(node_t));
+    if (IS_BAD_PTR(new_node)) { free(new_node); return NULL; }
+
+    new_node->type = node->type;
+    new_node->parent = NULL;
+    new_node->item = node->item;
+
+    new_node->left  = CopyNode(node->left);
+    new_node->right = CopyNode(node->right);
+
+    return new_node;
+}
+
+
 void set_parents(node_t *node, node_t *parent)
 {
     if (node == NULL) return;

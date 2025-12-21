@@ -80,9 +80,9 @@ enum backErr_t
 struct ntElem_t
 {
     const char*  name;
-    type_t 		 type;
+    // type_t 		 type;      					// nahui
     int          offset;
-    int          size_of_stk_frm;
+    // int          size_of_stk_frm;				// nahui
 };
 
 struct trans_t
@@ -93,9 +93,6 @@ struct trans_t
     int                      global_offset;
 };
 
-char *DataReader(FILE *SourceFile);
-node_t* NodeReader(char** cur_ptr, node_t* parent);
-
 backErr_t transCtor(trans_t *trans, const char *src);
 backErr_t transDtor(trans_t *trans);
 
@@ -104,7 +101,7 @@ backErr_t CompileOnlyFunc(trans_t *trans);
 backErr_t CompileNotFunc(trans_t *trans);
 backErr_t FindAndCompileInits(trans_t *trans);
 
-backErr_t TranslatePrimary(trans_t *trans);
+backErr_t TranslatePrimaryStatement(trans_t *trans);
 backErr_t TranslateCalc(trans_t *trans);
 backErr_t TranslateVarInit(trans_t *trans);
 backErr_t TranslateFuncDef(trans_t *trans);
@@ -132,5 +129,10 @@ backErr_t TranslateVar(trans_t *trans);
 #define CUR_NAME_TABLE      (trans->name_tables->data[trans->cur_name_table])
 #define CUR_NAME_TABLE_POS  (trans->cur_name_table)
 #define CUR_NAME_TABLE_SIZE (trans->name_tables->size)
+
+#define PUSH(ptr)  fprintf(ReportFile, "push %s\n", ptr)
+#define PUSHM(ptr) fprintf(ReportFile, "push [%s]\n", ptr)
+#define POP(ptr)   fprintf(ReportFile, "pop %s\n", ptr)
+#define POPM(ptr)  fprintf(ReportFile, "pop [%s]\n", ptr)
 
 #endif
